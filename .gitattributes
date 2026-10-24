@@ -1,0 +1,9 @@
+# Fim de linha sempre LF (hooks .sh quebram com CRLF; Prettier também espera LF).
+* text=auto eol=lf
+*.sh text eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
+*.avif binary
+*.mp4 binary
+*.pdf binary
