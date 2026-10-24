@@ -1,0 +1,33 @@
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Configurações pessoais do Claude Code (não compartilhar)
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Dependências e builds
+node_modules/
+dist/
+build/
+.next/
+__pycache__/
+.venv/
+*.pyc
+
+# Sistema / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Outros projetos dentro desta pasta (não fazem parte da v2)
+legado/
+corbina/
+
+# Gerados
+.astro/
+*.tsbuildinfo
+coverage/
+supabase/.temp/

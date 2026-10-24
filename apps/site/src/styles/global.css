@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+@import '@dk/ui/tokens.css';
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--color-creme);
+    color: var(--color-ebano-950);
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}

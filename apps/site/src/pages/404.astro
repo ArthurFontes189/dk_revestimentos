@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+
+const inicio = import.meta.env.BASE_URL;
+---
+
+<Base title="Página não encontrada | DK Revestimentos" description="Página não encontrada.">
+  <main class="grid min-h-dvh place-items-center px-4 text-center">
+    <div>
+      <h1 class="font-(family-name:--font-display) text-4xl">Página não encontrada</h1>
+      <a href={inicio} class="text-carvalho-600 mt-6 inline-block underline">
+        Voltar ao início
+      </a>
+    </div>
+  </main>
+</Base>

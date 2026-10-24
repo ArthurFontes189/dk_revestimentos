@@ -1,0 +1,57 @@
+/*
+ * Design tokens da DK Revestimentos (docs/SPEC.md, "Direção visual").
+ * Cores base da v1; escalas derivadas por mistura para não espalhar hex soltos pelo código.
+ * Contrastes medidos: dourado só sobre fundo escuro; texto suave #526074 = 6,0:1 sobre o creme.
+ */
+@theme {
+  /* Carvalho (marca) — base 600 */
+  --color-carvalho-600: #8a4f26;
+  --color-carvalho-50: color-mix(in oklab, var(--color-carvalho-600) 8%, white);
+  --color-carvalho-100: color-mix(in oklab, var(--color-carvalho-600) 16%, white);
+  --color-carvalho-200: color-mix(in oklab, var(--color-carvalho-600) 30%, white);
+  --color-carvalho-300: color-mix(in oklab, var(--color-carvalho-600) 48%, white);
+  --color-carvalho-400: color-mix(in oklab, var(--color-carvalho-600) 68%, white);
+  --color-carvalho-500: color-mix(in oklab, var(--color-carvalho-600) 84%, white);
+  --color-carvalho-700: color-mix(in oklab, var(--color-carvalho-600) 82%, black);
+  --color-carvalho-800: color-mix(in oklab, var(--color-carvalho-600) 64%, black);
+  --color-carvalho-900: color-mix(in oklab, var(--color-carvalho-600) 46%, black);
+
+  /* Dourado (destaque) — base 500. Usar SÓ sobre fundos escuros. */
+  --color-ouro-500: #c59b6d;
+  --color-ouro-50: color-mix(in oklab, var(--color-ouro-500) 10%, white);
+  --color-ouro-100: color-mix(in oklab, var(--color-ouro-500) 20%, white);
+  --color-ouro-200: color-mix(in oklab, var(--color-ouro-500) 38%, white);
+  --color-ouro-300: color-mix(in oklab, var(--color-ouro-500) 58%, white);
+  --color-ouro-400: color-mix(in oklab, var(--color-ouro-500) 80%, white);
+  --color-ouro-600: color-mix(in oklab, var(--color-ouro-500) 84%, black);
+  --color-ouro-700: color-mix(in oklab, var(--color-ouro-500) 66%, black);
+  --color-ouro-800: color-mix(in oklab, var(--color-ouro-500) 48%, black);
+  --color-ouro-900: color-mix(in oklab, var(--color-ouro-500) 32%, black);
+
+  /* Ébano (neutro escuro) — base 950 */
+  --color-ebano-950: #0e0f13;
+  --color-ebano-50: color-mix(in oklab, var(--color-ebano-950) 4%, white);
+  --color-ebano-100: color-mix(in oklab, var(--color-ebano-950) 8%, white);
+  --color-ebano-200: color-mix(in oklab, var(--color-ebano-950) 16%, white);
+  --color-ebano-300: color-mix(in oklab, var(--color-ebano-950) 30%, white);
+  --color-ebano-400: color-mix(in oklab, var(--color-ebano-950) 45%, white);
+  --color-ebano-500: color-mix(in oklab, var(--color-ebano-950) 60%, white);
+  --color-ebano-600: color-mix(in oklab, var(--color-ebano-950) 72%, white);
+  --color-ebano-700: color-mix(in oklab, var(--color-ebano-950) 82%, white);
+  --color-ebano-800: color-mix(in oklab, var(--color-ebano-950) 90%, white);
+  --color-ebano-900: color-mix(in oklab, var(--color-ebano-950) 95%, white);
+
+  /* Superfícies e texto */
+  --color-creme: #f9f8f5;
+  --color-texto-suave: #526074;
+
+  /* Tipografia — a fonte serifada de títulos ainda será escolhida e carregada (self-host). */
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* Raios (iguais à v1) */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+}

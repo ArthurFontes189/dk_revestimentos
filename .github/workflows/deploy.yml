@@ -1,0 +1,50 @@
+name: Deploy (GitHub Pages)
+
+# Hospedagem de desenvolvimento/homologação (ver docs/decisoes/0001-stack.md).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      # Valores PÚBLICOS, definidos em Settings > Secrets and variables > Actions > Variables.
+      SITE_URL: ${{ vars.SITE_URL }}
+      BASE_PATH: ${{ vars.BASE_PATH }}
+      PUBLIC_WHATSAPP_NUMBER: ${{ vars.PUBLIC_WHATSAPP_NUMBER }}
+      PUBLIC_META_PIXEL_ID: ${{ vars.PUBLIC_META_PIXEL_ID }}
+      PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+      PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_WHATSAPP_NUMBER: ${{ vars.PUBLIC_WHATSAPP_NUMBER }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
