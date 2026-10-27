@@ -3,6 +3,11 @@ import { semRolagemHorizontal, SUPABASE } from './apoio';
 
 const URL_LEADS = `${SUPABASE}/rest/v1/leads*`;
 
+// A maioria dos cenários não trata de cookies: registra a escolha antes, para o banner não atrapalhar.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.setItem('dk_consentimento', 'recusado'));
+});
+
 /** Abre a home e espera a ilha do formulário hidratar (ela só carrega ao aparecer na tela). */
 async function abrirFormulario(page: Page, caminho = '/') {
   // O WhatsApp abre em outra aba; não precisamos sair do ambiente de teste.

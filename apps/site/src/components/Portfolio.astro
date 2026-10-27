@@ -114,6 +114,8 @@ const classeFiltro =
 </section>
 
 <script>
+  import { registrar } from '../lib/rastreio';
+
   const botoesFiltro = document.querySelectorAll<HTMLButtonElement>('[data-filtro]');
   const itens = document.querySelectorAll<HTMLElement>('[data-item]');
 
@@ -156,6 +158,8 @@ const classeFiltro =
     titulo.textContent = botao.dataset.titulo ?? '';
     descricao.textContent = botao.dataset.descricao ?? '';
     dialogo.showModal();
+    // Interesse em um trabalho (só é enviado à Meta se o visitante aceitou os cookies).
+    registrar('ViewContent', { content_name: botao.dataset.titulo ?? '' });
   }
 
   document.querySelectorAll<HTMLElement>('[data-abrir]').forEach((botao) => {

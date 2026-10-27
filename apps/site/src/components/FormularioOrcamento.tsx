@@ -7,11 +7,13 @@ import {
 } from '@dk/core';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { lerOrigem } from '../lib/origem-cliente';
-import { supabase } from '../lib/supabase';
+import { registrar } from '../lib/rastreio';
 
 interface Props {
   /** Número da empresa (só dígitos, com DDI). Vem de PUBLIC_WHATSAPP_NUMBER. */
   numeroWhatsApp: string;
+  /** Serviço já escolhido (usado nas páginas de anúncio). */
+  servicoInicial?: TipoServico;
 }
 
 interface Dados {
@@ -47,9 +49,12 @@ function linkWhatsApp(numero: string, mensagem?: string): string | null {
   }
 }
 
-export default function FormularioOrcamento({ numeroWhatsApp }: Props) {
+export default function FormularioOrcamento({ numeroWhatsApp, servicoInicial }: Props) {
   const [passo, setPasso] = useState<1 | 2>(1);
-  const [dados, setDados] = useState<Dados>(DADOS_VAZIOS);
+  const [dados, setDados] = useState<Dados>({
+    ...DADOS_VAZIOS,
+    tipo_servico: servicoInicial ?? '',
+  });
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [linkConcluido, setLinkConcluido] = useState<string | null | undefined>(undefined);
@@ -110,9 +115,16 @@ export default function FormularioOrcamento({ numeroWhatsApp }: Props) {
       }),
     );
 
-    const resposta = supabase
-      ? await supabase.from('leads').insert(lead)
-      : { error: new Error('Supabase não configurado') };
+    // O cliente do Supabase é pesado: só é baixado na hora de enviar, não na entrada da página.
+    let resposta: { error: unknown };
+    try {
+      const { supabase } = await import('../lib/supabase');
+      resposta = supabase
+        ? await supabase.from('leads').insert(lead)
+        : { error: new Error('Supabase não configurado') };
+    } catch (erroDeRede) {
+      resposta = { error: erroDeRede };
+    }
     setEnviando(false);
 
     if (resposta.error) {
@@ -124,6 +136,8 @@ export default function FormularioOrcamento({ numeroWhatsApp }: Props) {
     }
 
     setLinkConcluido(link);
+    // Conversão para os anúncios (só é enviada à Meta se o visitante aceitou os cookies).
+    registrar('Lead');
     // Pode ser bloqueado pelo navegador (não foi um clique); o botão abaixo cobre esse caso.
     if (link) window.open(link, '_blank', 'noopener');
   }

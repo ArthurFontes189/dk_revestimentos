@@ -44,6 +44,13 @@ GitHub Actions publica no GitHub Pages (`.github/workflows/deploy.yml`) a partir
 As variáveis públicas (`SITE_URL`, `BASE_PATH`, WhatsApp, Supabase) ficam em
 Settings → Secrets and variables → Actions → **Variables**. Segredos nunca entram no repositório.
 
+Variáveis opcionais do site:
+
+| Variável               | Efeito                                                                                         |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| `PUBLIC_META_PIXEL_ID` | ID do Meta Pixel (só dígitos). Vazio = sem pixel e sem banner de cookies.                      |
+| `PUBLIC_INDEXAR`       | `true` permite o Google indexar o site (só em produção). Vazio = `noindex` e `robots` fechado. |
+
 > O GitHub Pages serve como hospedagem de desenvolvimento/homologação. Antes de divulgar com
 > anúncios, migrar para Cloudflare Pages (ver `docs/decisoes/0001-stack.md`).
 

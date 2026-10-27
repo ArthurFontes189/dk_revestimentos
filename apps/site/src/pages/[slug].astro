@@ -1,0 +1,104 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import FormularioOrcamento from '../components/FormularioOrcamento';
+import Rodape from '../components/Rodape.astro';
+import { LANDINGS } from '../data/landings';
+import { PORTFOLIO } from '../data/portfolio';
+import Base from '../layouts/Base.astro';
+import { linkWhatsApp, NUMERO_WHATSAPP } from '../lib/contato';
+import { url } from '../lib/urls';
+
+export const getStaticPaths = (() =>
+  LANDINGS.map((landing) => ({
+    params: { slug: landing.slug },
+    props: { landing },
+  }))) satisfies GetStaticPaths;
+
+const { landing } = Astro.props;
+// Só trabalhos reais da categoria; vídeos usam a capa (esta página é leve, sem players).
+const trabalhos = PORTFOLIO.filter((item) => item.categoria === landing.categoria).slice(0, 6);
+const whatsapp = linkWhatsApp(`Olá! Gostaria de um orçamento de ${landing.titulo.toLowerCase()}.`);
+---
+
+<Base title={`${landing.titulo} | DK Revestimentos`} description={landing.descricao} noindex>
+  <header class="bg-ebano-950 text-creme">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+      <a href={url('')} class="font-(family-name:--font-display) text-lg">
+        DK <span class="text-ouro-500">Revestimentos</span>
+      </a>
+      <a
+        href={whatsapp}
+        class="bg-carvalho-600 hover:bg-carvalho-700 inline-flex min-h-11 items-center rounded-lg px-4 text-sm font-medium"
+      >
+        WhatsApp
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="bg-ebano-950 text-creme px-4 pt-10 pb-14 md:pt-16 md:pb-20">
+      <div class="mx-auto grid max-w-6xl items-start gap-10 md:grid-cols-2 lg:gap-16">
+        <div>
+          <p class="text-ouro-500 text-sm tracking-[0.2em] uppercase">Marcenaria e revestimentos</p>
+          <h1 class="mt-4 text-4xl leading-[1.1] sm:text-5xl">{landing.titulo}</h1>
+          <p class="text-ebano-100 mt-5 max-w-xl text-lg leading-relaxed">{landing.subtitulo}</p>
+          <ul class="text-ebano-100 mt-6 space-y-3">
+            {landing.pontos.map((ponto) => (
+              <li class="flex gap-3">
+                <span class="text-ouro-500" aria-hidden="true">
+                  ✓
+                </span>
+                {ponto}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div
+          id="orcamento"
+          class="text-ebano-950 scroll-mt-4 rounded-2xl bg-white p-6 shadow-lg sm:p-8"
+        >
+          <h2 class="text-2xl">Peça seu orçamento</h2>
+          <p class="text-texto-suave mt-1 mb-6 text-sm">Leva menos de um minuto.</p>
+          <FormularioOrcamento
+            client:idle
+            numeroWhatsApp={NUMERO_WHATSAPP}
+            servicoInicial={landing.servico}
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="px-4 py-16">
+      <div class="mx-auto max-w-6xl">
+        <h2 class="text-3xl">Trabalhos feitos pela nossa equipe</h2>
+        <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {trabalhos.map((item) => (
+            <li class="overflow-hidden rounded-xl bg-white">
+              <Image
+                src={item.imagem}
+                alt={item.descricao}
+                widths={[360, 720]}
+                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                format="webp"
+                quality={75}
+                loading="lazy"
+                class="aspect-[4/3] w-full object-cover"
+              />
+              <p class="p-3 text-sm">{item.titulo}</p>
+            </li>
+          ))}
+        </ul>
+        <a
+          href={whatsapp}
+          class="bg-carvalho-600 text-creme hover:bg-carvalho-700 mt-10 inline-flex min-h-12 items-center rounded-lg px-7 font-medium"
+        >
+          Falar no WhatsApp
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Rodape />
+</Base>

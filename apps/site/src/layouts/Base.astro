@@ -1,13 +1,52 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import frauncesLatim from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
+import jakartaLatim from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
+import BannerCookies from '../components/BannerCookies.astro';
+import { url } from '../lib/urls';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description: string;
+  /** Páginas de anúncio e utilitárias não devem aparecer no Google. */
+  noindex?: boolean;
+  /** Imagem do cartão de compartilhamento (WhatsApp, Instagram, Facebook). */
+  imagem?: ImageMetadata;
+  /** Marca a home com os dados da empresa para o Google. */
+  organizacao?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false, imagem, organizacao = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// Indexação só quando o dono ligar PUBLIC_INDEXAR=true (produção); em homologação fica desligada.
+const indexar = import.meta.env.PUBLIC_INDEXAR === 'true' && !noindex;
+
+const og = imagem
+  ? await getImage({
+      src: imagem,
+      width: 1200,
+      height: 630,
+      fit: 'cover',
+      format: 'jpeg',
+      quality: 80,
+    })
+  : null;
+const imagemUrl = og ? new URL(og.src, Astro.site).href : null;
+
+// Só dados que sabemos serem verdadeiros: sem telefone, endereço nem avaliações inventadas.
+const dadosEstruturados = organizacao
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'DK Revestimentos',
+      url: canonical.href,
+      description,
+      ...(imagemUrl && { image: imagemUrl }),
+    }
+  : null;
 ---
 
 <!doctype html>
@@ -17,20 +56,42 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content={indexar ? 'index, follow' : 'noindex, nofollow'} />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="DK Revestimentos" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    {imagemUrl && (
+      <>
+        <meta property="og:image" content={imagemUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={imagemUrl} />
+      </>
+    )}
     <meta name="theme-color" content="#0e0f13" />
+    <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+    <!-- Fontes do primeiro desenho da página (subconjunto latino): baixadas já no início. -->
+    <link rel="preload" as="font" type="font/woff2" href={frauncesLatim} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={jakartaLatim} crossorigin />
+    {dadosEstruturados && (
+      <script type="application/ld+json" set:html={JSON.stringify(dadosEstruturados)} />
+    )}
   </head>
   <body>
     <slot />
+    <BannerCookies />
     <script>
       // Guarda de qual anúncio/campanha o visitante veio, para gravar no lead.
       import { capturarOrigem } from '../lib/origem-cliente';
+      // Meta Pixel: só carrega depois do aceite dos cookies (e só se houver ID configurado).
+      import { iniciarRastreio } from '../lib/rastreio';
       capturarOrigem();
+      iniciarRastreio();
     </script>
   </body>
 </html>

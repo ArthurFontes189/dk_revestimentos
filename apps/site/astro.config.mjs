@@ -9,6 +9,8 @@ export default defineConfig({
   site: process.env.SITE_URL ?? 'http://localhost:4321',
   base,
   trailingSlash: 'always',
+  // CSS pequeno embutido no HTML: tira um pedido que bloqueava a primeira pintura.
+  build: { inlineStylesheets: 'always' },
   integrations: [react()],
   // Lê o .env da raiz do monorepo (um só arquivo para site e painel).
   vite: { plugins: [tailwindcss()], envDir: '../../' },

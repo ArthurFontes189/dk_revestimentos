@@ -1,0 +1,125 @@
+---
+import Base from '../layouts/Base.astro';
+import { linkWhatsApp } from '../lib/contato';
+import { rastreioConfigurado } from '../lib/rastreio';
+import { url } from '../lib/urls';
+
+const ATUALIZADA_EM = '27/10/2026';
+const whatsapp = linkWhatsApp('Olá! Tenho uma dúvida sobre privacidade e meus dados.');
+
+// Modelo de política. O cliente deve revisá-lo (e, se possível, ter revisão jurídica) e informar
+// razão social, CNPJ e e-mail de contato antes de divulgar o site com anúncios.
+const secoes = [
+  {
+    titulo: '1. Quem somos',
+    texto:
+      'Esta política explica como a DK Revestimentos (marcenaria e revestimentos sob medida) trata os dados pessoais de quem usa este site, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018, a LGPD).',
+  },
+  {
+    titulo: '2. Quais dados coletamos',
+    itens: [
+      'Dados do pedido de orçamento: nome, telefone/WhatsApp, tipo de serviço, e, se você quiser informar, bairro e uma mensagem sobre o projeto.',
+      'Origem da visita: quando você chega por um anúncio ou link de campanha, guardamos os parâmetros dessa campanha (por exemplo, origem e identificador do anúncio) e a página em que entrou, para sabermos o que trouxe o pedido.',
+      'Dados técnicos básicos de navegação, tratados pela hospedagem do site.',
+    ],
+  },
+  {
+    titulo: '3. Para que usamos seus dados',
+    itens: [
+      'Responder ao seu pedido de orçamento e conversar com você sobre o projeto.',
+      'Entender quais anúncios e páginas trazem pedidos, para melhorar a nossa comunicação (esta parte só ocorre com o seu consentimento, descrito na seção 6).',
+    ],
+  },
+  {
+    titulo: '4. Base legal',
+    texto:
+      'Tratamos os dados do orçamento porque você nos pediu e eles são necessários para atendê-lo (procedimentos preliminares relacionados a contrato, a pedido do titular, art. 7º, V da LGPD). Os cookies de medição e anúncios dependem do seu consentimento (art. 7º, I).',
+  },
+  {
+    titulo: '5. Com quem compartilhamos',
+    itens: [
+      'Provedores de tecnologia que armazenam e processam os dados em nosso nome, como a plataforma de banco de dados (Supabase) e a hospedagem do site.',
+      'WhatsApp (Meta), quando você escolhe continuar a conversa por lá.',
+      'Meta (Facebook e Instagram), somente se você aceitar os cookies de medição e anúncios.',
+      'Não vendemos seus dados.',
+    ],
+  },
+  {
+    titulo: '6. Cookies',
+    texto:
+      'Este site não usa cookies de medição ou anúncios sem a sua autorização. Se você aceitar, a Meta pode gravar cookies (como _fbp e _fbc) para medir a eficácia dos anúncios. Você pode recusar ou mudar a escolha a qualquer momento pelo botão "Preferências de cookies" no rodapé; ao recusar, apagamos esses cookies e nenhum dado é enviado à Meta pelo site.',
+  },
+  {
+    titulo: '7. Por quanto tempo guardamos',
+    texto:
+      'Pelo tempo necessário para atender ao seu pedido e cumprir obrigações legais, ou até você pedir a exclusão, quando a lei permitir.',
+  },
+  {
+    titulo: '8. Seus direitos',
+    texto:
+      'Você pode pedir a confirmação de que tratamos seus dados, o acesso a eles, a correção, a anonimização, o bloqueio ou a eliminação, a portabilidade, informações sobre com quem compartilhamos e a revogação do consentimento (art. 18 da LGPD).',
+  },
+  {
+    titulo: '9. Como falar com a gente',
+    texto: 'Para exercer seus direitos ou tirar dúvidas, fale conosco pelo WhatsApp.',
+  },
+  {
+    titulo: '10. Mudanças nesta política',
+    texto: 'Podemos atualizar este texto. A data da última atualização aparece no topo da página.',
+  },
+];
+---
+
+<Base
+  title="Política de privacidade | DK Revestimentos"
+  description="Como a DK Revestimentos trata os dados pessoais de quem usa o site: o que coletamos, para quê, com quem compartilhamos e como exercer seus direitos."
+>
+  <header class="bg-ebano-950 text-creme">
+    <div class="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3">
+      <a href={url('')} class="font-(family-name:--font-display) text-lg">
+        DK <span class="text-ouro-500">Revestimentos</span>
+      </a>
+      <a
+        href={url('')}
+        class="text-ebano-100 hover:text-ouro-500 inline-flex min-h-11 items-center text-sm underline"
+      >
+        Voltar ao site
+      </a>
+    </div>
+  </header>
+
+  <main class="px-4 py-14">
+    <article class="mx-auto max-w-3xl">
+      <h1 class="text-4xl">Política de privacidade</h1>
+      <p class="text-texto-suave mt-2 text-sm">Atualizada em {ATUALIZADA_EM}</p>
+
+      {secoes.map((secao) => (
+        <section class="mt-10">
+          <h2 class="text-2xl">{secao.titulo}</h2>
+          {secao.texto && <p class="text-texto-suave mt-3 leading-relaxed">{secao.texto}</p>}
+          {secao.itens && (
+            <ul class="text-texto-suave mt-3 list-disc space-y-2 pl-6 leading-relaxed">
+              {secao.itens.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ))}
+
+      <p class="mt-10 flex flex-wrap items-center gap-4">
+        <a
+          href={whatsapp}
+          class="bg-carvalho-600 text-creme hover:bg-carvalho-700 inline-flex min-h-11 items-center rounded-lg px-6 font-medium"
+        >
+          Falar sobre meus dados
+        </a>
+        {rastreioConfigurado && (
+          <button type="button" data-abrir-cookies class="text-carvalho-700 min-h-11 underline">
+            Preferências de cookies
+          </button>
+        )}
+      </p>
+    </article>
+  </main>
+</Base>

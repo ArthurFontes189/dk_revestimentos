@@ -8,7 +8,7 @@
 ## Em andamento
 
 - [ ] **E1 e E2 funcionando em produção** (login, formulário, gravação de lead e CRM, testados pelo dono). Playwright já cobre o site e o painel nas 4 larguras (48 execuções passando). Restam, e passam para a E9 se não forem feitos antes: URL de redirecionamento da recuperação de senha, tema escuro e divisão do bundle do painel.
-- [ ] **E3 — Site público premium, em andamento.** Feito: home, portfólio, fontes e testes (72 execuções no Playwright). Falta: SEO, política de privacidade, banner de cookies, Meta Pixel, landing pages e medir o Lighthouse.
+- [ ] **E3 — Site público premium, em andamento.** Feito: home, portfólio, fontes, SEO, privacidade, cookies com Meta Pixel, páginas de anúncio e Lighthouse (144 execuções no Playwright). Falta: aprovação dos textos pelo cliente, revisão da política de privacidade e o LCP um pouco acima da meta.
 
 ## Próximas
 
@@ -58,10 +58,14 @@ Spec: #1, #2, #4, #14 (site), direção visual.
 - [ ] **Portfólio provisório:** hoje os 14 itens vivem no código (`apps/site/src/data/portfolio.ts`). A E4 os move para o banco e o Storage, com edição pelo painel. Decidir como o site estático reflete mudanças (rebuild automático ao publicar)
 - [ ] Decidir sobre o `legado/assets/hero-bg.jpg`: parece render ou banco de imagens, não uma obra da DK; **não foi usado**. Só entra se o cliente confirmar que é dele ou tiver os direitos
 - [ ] Migration `portfolio_items` + bucket `portfolio` (junto com a E4)
-- [ ] SEO: meta, Open Graph, dados estruturados de negócio local, sitemap, política de privacidade
-- [ ] Banner de cookies (LGPD) + Meta Pixel (`PageView`, `ViewContent`, `Contact`, `Lead`), desligado sem ID
-- [ ] Landing pages para anúncios
-- [ ] Lighthouse mobile e desktop ≥ 90; LCP < 2,5 s; home ≤ 1 MB sem vídeos
+- [x] SEO: título, descrição, canonical, Open Graph e Twitter (imagem 1200×630 absoluta), dados estruturados `Organization` sem telefone/endereço inventados, `sitemap.xml` e `robots.txt`, favicon próprio
+- [x] **Indexação desligada por padrão** (`noindex` + `robots` fechado) enquanto o site está em homologação; `PUBLIC_INDEXAR=true` liga no deploy de produção
+- [x] Política de privacidade (`/privacidade/`), texto-modelo alinhado à LGPD. **Falta o cliente informar razão social, CNPJ e e-mail de contato e revisar (idealmente com apoio jurídico) antes de divulgar com anúncios**
+- [x] Banner de cookies + Meta Pixel (`PageView`, `ViewContent`, `Contact`, `Lead`): só existe se `PUBLIC_META_PIXEL_ID` for válido; a Meta só é carregada após o aceite; recusar apaga `_fbp`/`_fbc`; "Recusar" e "Aceitar" com o mesmo peso; reabre pelo rodapé
+- [x] Páginas de anúncio (`noindex`, leves, com o serviço já escolhido no formulário e a campanha gravada no lead): `/decks-e-areas-externas/`, `/moveis-sob-medida/`, `/marcenaria-sob-medida/`. Não há página de cozinhas e closets porque não há fotos reais desse tipo
+- [x] Lighthouse (laboratório, 4G lento simulado, com compressão): home celular 96, desktop 100; anúncios 97 a 98; acessibilidade 100 e boas práticas 100 em todas. LCP: home celular 2,8 s, anúncios 2,3 a 2,6 s (meta 2,5 s, quase lá); home desktop 0,6 s
+- [ ] Reduzir o LCP da home no celular (2,8 s) e das páginas de anúncio (2,6 s) para abaixo de 2,5 s; confirmar com dados reais (PageSpeed/Search Console) depois de publicado em produção
+- [ ] Meta Conversions API (envio do `Lead` pelo servidor): fica na E9
 
 **Precisa de você:** WhatsApp real e domínio (podem vir depois), aprovação dos textos, ID do pixel quando houver conta de anúncios.
 

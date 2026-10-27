@@ -12,6 +12,8 @@ const env = {
   BASE_PATH: '/',
   SITE_URL: 'http://127.0.0.1:4173',
   PUBLIC_WHATSAPP_NUMBER: '5561900000000',
+  // ID fictício: faz o banner de cookies existir. O script da Meta é bloqueado nos testes.
+  PUBLIC_META_PIXEL_ID: '1234567890',
   PUBLIC_SUPABASE_URL: SUPABASE_FALSO,
   PUBLIC_SUPABASE_PUBLISHABLE_KEY: CHAVE_FALSA,
   VITE_SUPABASE_URL: SUPABASE_FALSO,
