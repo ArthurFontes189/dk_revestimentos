@@ -31,3 +31,7 @@ corbina/
 *.tsbuildinfo
 coverage/
 supabase/.temp/
+
+# Playwright
+playwright-report/
+test-results/

@@ -16,7 +16,7 @@
 - Site público: Astro 5+ (ilhas React só onde há interação) · Painel: React + Vite em `/admin`
 - Estilo: Tailwind v4 com tokens em `packages/ui/src/tokens.css`
 - Backend: Supabase **novo** (Postgres + Auth de 1 usuário + Storage + Edge Functions). Nada do projeto da v1.
-- Testes: Vitest (regras) · pgTAP (RLS, a criar) · Playwright (fluxos e larguras, a criar)
+- Testes: Vitest (regras) · pgTAP (RLS, roda no CI) · Playwright (fluxos nas 4 larguras 360/768/1280/1920, Supabase simulado)
 - Hospedagem: GitHub Pages (só estático) por enquanto; migrar para Cloudflare Pages antes de anúncios pagos
 - Gerenciador de pacotes: pnpm ← use SEMPRE este, nunca npm/yarn
 
@@ -31,9 +31,11 @@ pnpm lint           # ESLint
 pnpm format:check   # Prettier (use `pnpm format` para corrigir)
 pnpm typecheck      # tsc + astro check
 pnpm build          # build dos dois apps + junta em dist/ (site na raiz, painel em /admin)
+pnpm build:e2e      # build de teste (URL do Supabase FALSA) em dist/
+pnpm test:e2e       # Playwright contra o dist/ (rode `build:e2e` antes)
 ```
 
-Antes de dizer que terminou, rode `format:check`, `lint`, `typecheck`, `test` e `build`.
+Antes de dizer que terminou, rode `format:check`, `lint`, `typecheck`, `test`, `build` e, se mexeu em tela ou fluxo, `build:e2e` + `test:e2e`.
 
 ## Estrutura
 
@@ -75,6 +77,8 @@ legado/          v1 (somente leitura, fora do git da v2)
 - **TypeScript:** mantenha `typescript@6`. A versão 7 quebra o `typescript-eslint` (o lint não roda).
 - **GitHub Pages:** sem rewrites, então o painel usa rota por hash. `BASE_PATH` termina com `/` (`/` com domínio próprio, `/nome-do-repo/` sem).
 - **Windows:** o atalho global `pnpm.cmd` desta máquina está quebrado no `cmd`/PowerShell. Rode `pnpm` pelo Git Bash. No Git Bash, um valor como `BASE_PATH=/x/` é convertido em caminho do Windows; defina-o via script Node ou PowerShell.
+- **ffmpeg:** instalado via winget (`Gyan.FFmpeg`), mas o PATH só vale em shell novo. Até lá, use o caminho completo em `%LOCALAPPDATA%\Microsoft\WinGet\Packages\Gyan.FFmpeg_*\ffmpeg-*\bin\ffmpeg.exe`.
+- **Testes e2e:** o Supabase é simulado por `page.route` (`e2e/apoio.ts`). O `build:e2e` usa `https://e2e.supabase.co`; nunca aponte os testes para o projeto real (eles criariam e apagariam leads de verdade).
 - **Hooks:** o hook bloqueia editar `.env*` (exceto `.env.example`), lockfiles e `.git/`. O `rm -rf` é negado pelas permissões.
 - **`corbina/`:** é um worktree git de outra branch, alheio a este projeto. Não mexa; está no `.gitignore`.
 - **Supabase gratuito** pausa após 1 semana sem uso e não tem backup. Produção exige plano Pro.

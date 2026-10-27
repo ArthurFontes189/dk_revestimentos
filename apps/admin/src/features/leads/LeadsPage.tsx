@@ -199,35 +199,38 @@ export function LeadsPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <h1 className="font-(family-name:--font-display) text-3xl">Leads</h1>
-      <p className="text-texto-suave mt-1" aria-live="polite">
-        {consulta.isSuccess
-          ? pendentes === 1
-            ? '1 lead aguardando contato'
-            : `${pendentes} leads aguardando contato`
-          : ' '}
-      </p>
+      {/* No celular, com um lead aberto, o detalhe ocupa a tela toda (sem título nem filtros). */}
+      <div className={selecionado ? 'hidden md:block' : ''}>
+        <h1 className="font-(family-name:--font-display) text-3xl">Leads</h1>
+        <p className="text-texto-suave mt-1" aria-live="polite">
+          {consulta.isSuccess
+            ? pendentes === 1
+              ? '1 lead aguardando contato'
+              : `${pendentes} leads aguardando contato`
+            : ' '}
+        </p>
 
-      <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filtrar por status">
-        {FILTROS.map((opcao) => {
-          const ativo = filtro === opcao;
-          const total = opcao === 'Todos' ? leads.length : filtrarPorStatus(leads, opcao).length;
-          return (
-            <button
-              key={opcao}
-              type="button"
-              aria-pressed={ativo}
-              onClick={() => setFiltro(opcao)}
-              className={`focus-visible:outline-carvalho-600 min-h-11 rounded-full border px-4 text-sm focus-visible:outline-2 ${
-                ativo
-                  ? 'border-carvalho-600 bg-carvalho-600 text-creme'
-                  : 'border-ebano-300 bg-white'
-              }`}
-            >
-              {opcao} ({total})
-            </button>
-          );
-        })}
+        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filtrar por status">
+          {FILTROS.map((opcao) => {
+            const ativo = filtro === opcao;
+            const total = opcao === 'Todos' ? leads.length : filtrarPorStatus(leads, opcao).length;
+            return (
+              <button
+                key={opcao}
+                type="button"
+                aria-pressed={ativo}
+                onClick={() => setFiltro(opcao)}
+                className={`focus-visible:outline-carvalho-600 min-h-11 rounded-full border px-4 text-sm focus-visible:outline-2 ${
+                  ativo
+                    ? 'border-carvalho-600 bg-carvalho-600 text-creme'
+                    : 'border-ebano-300 bg-white'
+                }`}
+              >
+                {opcao} ({total})
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {consulta.isPending && <p className="text-texto-suave mt-8">Carregando leads…</p>}

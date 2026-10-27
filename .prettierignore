@@ -4,3 +4,5 @@ dist
 legado
 corbina
 pnpm-lock.yaml
+playwright-report
+test-results

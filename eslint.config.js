@@ -6,7 +6,15 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '**/.astro/**', '**/node_modules/**', 'legado/**', 'corbina/**'],
+    ignores: [
+      '**/dist/**',
+      '**/.astro/**',
+      '**/node_modules/**',
+      'legado/**',
+      'corbina/**',
+      'playwright-report/**',
+      'test-results/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

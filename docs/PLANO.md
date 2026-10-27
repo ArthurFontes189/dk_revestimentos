@@ -7,7 +7,7 @@
 
 ## Em andamento
 
-- [ ] **E1 e E2 funcionando em produção** (login, formulário, gravação de lead e CRM, testados pelo dono). Restam, e passam para a E9 se não forem feitos antes: Playwright, URL de redirecionamento da recuperação de senha, tema escuro e divisão do bundle do painel.
+- [ ] **E1 e E2 funcionando em produção** (login, formulário, gravação de lead e CRM, testados pelo dono). Playwright já cobre o site e o painel nas 4 larguras (48 execuções passando). Restam, e passam para a E9 se não forem feitos antes: URL de redirecionamento da recuperação de senha, tema escuro e divisão do bundle do painel.
 - [ ] **Próxima: E3 — Site público premium.**
 
 ## Próximas
@@ -27,7 +27,7 @@ Spec: #5, #14 (parte), #13 do painel responsivo.
 - [x] ~~Desligar o cadastro público~~ — **não será desligado**: o projeto é compartilhado com outro app que pode depender dele; a tabela `admins` já protege os dados da DK
 - [ ] Autorizar a URL do painel em Authentication → URL Configuration → Redirect URLs (necessário para a recuperação de senha)
 - [x] Login testado pelo dono em https://arthurfontes189.github.io/dk_revestimentos/admin/
-- [ ] Playwright: login (com sessão simulada) e larguras 360/768/1280/1920 sem rolagem horizontal
+- [x] Playwright: login (redirecionamento sem sessão) e painel com sessão simulada nas larguras 360/768/1280/1920, sem rolagem horizontal; layout conferido também por capturas de tela
 - [ ] Dividir o bundle do painel (hoje 598 kB, 175 kB comprimido) quando houver módulos reais
 
 **Precisa de você:** testar o login no painel publicado e autorizar a URL de redirecionamento (ou me pedir para fazê-lo).
@@ -42,7 +42,7 @@ Spec: #3, #4 (UTM), #6.
 - [x] CRM no painel: lista, filtro por status com contagem, contador de pendentes, mudança de status, exclusão com confirmação, botão de WhatsApp (**não testado com dados reais**)
 - [x] Layouts de CRM: cards no celular alternando com o detalhe; lista + detalhe lado a lado no PC (**celular não verificado visualmente**)
 - [x] Regras testadas no `@dk/core`: origem, mensagem de orçamento, filtros de leads, formatação de telefone (46 testes)
-- [ ] Teste ponta a ponta (Playwright): enviar orçamento e vê-lo no CRM, nas larguras 360/768/1280/1920
+- [x] Teste ponta a ponta (Playwright, Supabase simulado): enviar orçamento (com UTM, erro do banco e isca anti-spam), listar, filtrar, abrir detalhe e trocar status, nas 4 larguras; roda no CI
 - [x] Orçamento de teste enviado no site publicado e visto em Leads pelo dono: formulário, gravação e CRM funcionam em produção
 - [ ] Rate limit / captcha no formulário público se aparecer spam (hoje só a isca anti-spam e as validações do banco)
 
@@ -117,7 +117,7 @@ _Utilizável:_ pronto para o cliente usar e divulgar.
 Spec: #14, requisitos não funcionais.
 
 - [ ] PWA: service worker, ícones 192/512 e maskable; instalação em Android e iOS
-- [ ] Playwright nos fluxos críticos e nas 4 larguras; modais com foco preso e `role="dialog"`
+- [ ] Estender o Playwright aos novos fluxos (clientes, obras, caixa…); modais com foco preso e `role="dialog"`
 - [ ] Meta Conversions API (Edge Function) — se não couber antes, entra aqui
 - [ ] Migração do deploy para Cloudflare Pages antes de anúncios pagos; domínio próprio
 - [ ] Supabase Pro (backup e sem pausa) e checklist de entrega: trocar senha do admin, WhatsApp e pixel reais
