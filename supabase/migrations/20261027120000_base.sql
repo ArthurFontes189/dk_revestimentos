@@ -1,11 +1,9 @@
 -- E1: base do banco da v2 (enums, admin, leads) com RLS desde o início.
 -- Regra do projeto: nenhuma tabela nasce com GRANT amplo ao anon.
 
--- Tabelas novas deste schema não herdam acesso do anon/authenticated:
--- cada migration concede, de forma explícita, só o necessário.
-alter default privileges in schema public revoke all on tables from anon, authenticated;
-alter default privileges in schema public revoke all on sequences from anon, authenticated;
-alter default privileges in schema public revoke all on functions from anon, authenticated;
+-- Este projeto Supabase é compartilhado com outro app, então NÃO alteramos os privilégios
+-- padrão do schema `public`. Em vez disso, cada objeto da DK revoga o acesso herdado e
+-- concede, de forma explícita, só o necessário.
 
 -- Enums (valores iguais aos da v1, ver docs/DIAGNOSTICO-V1.md seção 5)
 create type public.status_lead as enum (
@@ -35,6 +33,9 @@ begin
 end;
 $$;
 
+-- Função de trigger: ninguém precisa chamá-la pela API.
+revoke all on function public.set_updated_at() from public, anon, authenticated;
+
 -- Admins: lista de usuários com acesso ao painel. Hoje há um só.
 -- Sem policies: ninguém lê nem escreve pela API; só o dono do banco (SQL Editor/migrations).
 create table public.admins (
@@ -42,6 +43,7 @@ create table public.admins (
   created_at timestamptz not null default now()
 );
 alter table public.admins enable row level security;
+revoke all on public.admins from anon, authenticated;
 
 -- security definer: lê `admins` mesmo com RLS ligado, sem expor a tabela.
 create function public.is_admin()
@@ -84,6 +86,10 @@ create trigger leads_set_updated_at
   for each row execute function public.set_updated_at();
 
 alter table public.leads enable row level security;
+
+-- Remove qualquer acesso herdado (o Supabase concede tudo ao anon/authenticated por padrão).
+revoke all on public.leads from anon, authenticated;
+revoke all on sequence public.leads_id_seq from anon, authenticated;
 
 -- Visitante (anon): só INSERT, e só nas colunas do formulário (não escolhe status, id nem datas).
 grant insert (

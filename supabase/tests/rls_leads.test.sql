@@ -1,6 +1,6 @@
 -- Testes de RLS das tabelas `leads` e `admins` (pgTAP). Rodam com `supabase test db`.
 begin;
-select plan(14);
+select plan(15);
 
 -- Dois usuários simulados pelo JWT (auth.uid() lê o `sub`); só o primeiro é admin.
 insert into public.admins (user_id) values ('11111111-1111-1111-1111-111111111111');
@@ -110,6 +110,12 @@ select is(
 select lives_ok(
   $$ delete from public.leads $$,
   'deve permitir excluir leads quando o usuário é admin'
+);
+
+select lives_ok(
+  $$ insert into public.leads (nome, telefone, tipo_servico)
+     values ('Ana Lima', '61988887777', 'Ambientes Externos') $$,
+  'deve permitir criar lead quando o usuário é admin'
 );
 
 select * from finish();
