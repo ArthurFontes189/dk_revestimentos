@@ -1,0 +1,174 @@
+---
+import { getImage, Image } from 'astro:assets';
+import { categoriasComItens, idDaCategoria, PORTFOLIO } from '../data/portfolio';
+
+const categorias = categoriasComItens();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Versão grande (só para a ampliação), gerada em build; as miniaturas usam <Image> abaixo.
+const itens = await Promise.all(
+  PORTFOLIO.map(async (item) => ({
+    ...item,
+    categoriaId: idDaCategoria(item.categoria),
+    grande: (await getImage({ src: item.imagem, width: 1600, format: 'webp', quality: 80 })).src,
+    urlVideo: item.video ? `${base}/${item.video}` : '',
+  })),
+);
+
+const classeFiltro =
+  'border-ebano-600 text-creme hover:border-ouro-500 aria-pressed:border-ouro-500 aria-pressed:bg-ouro-500 aria-pressed:text-ebano-950 focus-visible:outline-ouro-500 inline-flex min-h-11 items-center rounded-full border px-4 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2';
+---
+
+<section id="portfolio" class="bg-ebano-950 text-creme scroll-mt-16 px-4 py-20">
+  <div class="mx-auto max-w-6xl">
+    <p class="text-ouro-500 text-sm tracking-[0.2em] uppercase">Portfólio</p>
+    <h2 class="mt-3 max-w-2xl text-3xl sm:text-4xl">Trabalhos feitos pela nossa equipe</h2>
+
+    <div class="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoria">
+      <button type="button" data-filtro="todos" aria-pressed="true" class={classeFiltro}>
+        Todos
+      </button>
+      {categorias.map((categoria) => (
+        <button type="button" data-filtro={categoria.id} aria-pressed="false" class={classeFiltro}>
+          {categoria.rotulo}
+        </button>
+      ))}
+    </div>
+
+    <ul class="mt-8 columns-1 gap-4 sm:columns-2 lg:columns-3">
+      {itens.map((item) => (
+        <li data-item data-categoria={item.categoriaId} class="mb-4 break-inside-avoid">
+          <button
+            type="button"
+            data-abrir
+            data-tipo={item.tipo}
+            data-grande={item.grande}
+            data-video={item.urlVideo}
+            data-titulo={item.titulo}
+            data-descricao={item.descricao}
+            aria-label={`${item.tipo === 'video' ? 'Assistir ao vídeo' : 'Ampliar a foto'}: ${item.titulo}`}
+            class="group focus-visible:outline-ouro-500 relative block w-full overflow-hidden rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            <Image
+              src={item.imagem}
+              alt={item.descricao}
+              widths={[360, 720, 1080]}
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              format="webp"
+              quality={75}
+              loading="lazy"
+              class="h-auto w-full transition-transform duration-500 group-hover:scale-105"
+            />
+            {item.tipo === 'video' && (
+              <span class="absolute inset-0 grid place-items-center" aria-hidden="true">
+                <svg viewBox="0 0 48 48" class="size-14 drop-shadow-lg">
+                  <circle
+                    cx="24"
+                    cy="24"
+                    r="23"
+                    fill="rgb(14 15 19 / 0.65)"
+                    stroke="#c59b6d"
+                    stroke-width="2"
+                  />
+                  <path d="M19 15l16 9-16 9z" fill="#c59b6d" />
+                </svg>
+              </span>
+            )}
+            <span class="from-ebano-950/90 absolute inset-x-0 bottom-0 bg-gradient-to-t to-transparent p-3 pt-10 text-left text-sm">
+              {item.titulo}
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <dialog
+    id="lightbox"
+    aria-labelledby="lightbox-titulo"
+    class="bg-ebano-900 text-creme m-auto max-h-[94dvh] w-[min(96vw,60rem)] overflow-auto rounded-xl p-0 backdrop:bg-black/80"
+  >
+    <div class="flex items-center justify-between gap-4 p-3">
+      <h3 id="lightbox-titulo" class="text-lg"></h3>
+      <button
+        type="button"
+        id="lightbox-fechar"
+        class={`${classeFiltro} shrink-0`}
+        aria-label="Fechar"
+      >
+        Fechar
+      </button>
+    </div>
+    <div id="lightbox-midia" class="flex justify-center bg-black"></div>
+    <div class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <p id="lightbox-descricao" class="text-ebano-100"></p>
+      <a
+        id="lightbox-cta"
+        href="#orcamento"
+        class="bg-carvalho-600 text-creme hover:bg-carvalho-700 focus-visible:outline-ouro-500 inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg px-5 font-medium focus-visible:outline-2 focus-visible:outline-offset-2"
+      >
+        Pedir orçamento
+      </a>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  const botoesFiltro = document.querySelectorAll<HTMLButtonElement>('[data-filtro]');
+  const itens = document.querySelectorAll<HTMLElement>('[data-item]');
+
+  botoesFiltro.forEach((botao) => {
+    botao.addEventListener('click', () => {
+      const filtro = botao.dataset.filtro;
+      botoesFiltro.forEach((outro) => outro.setAttribute('aria-pressed', String(outro === botao)));
+      itens.forEach((item) => {
+        item.hidden = filtro !== 'todos' && item.dataset.categoria !== filtro;
+      });
+    });
+  });
+
+  const dialogo = document.getElementById('lightbox') as HTMLDialogElement | null;
+  const midia = document.getElementById('lightbox-midia');
+  const titulo = document.getElementById('lightbox-titulo');
+  const descricao = document.getElementById('lightbox-descricao');
+
+  function abrir(botao: HTMLElement) {
+    if (!dialogo || !midia || !titulo || !descricao) return;
+    midia.replaceChildren();
+    if (botao.dataset.tipo === 'video' && botao.dataset.video) {
+      const video = document.createElement('video');
+      video.src = botao.dataset.video;
+      video.controls = true;
+      video.autoplay = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      video.className = 'max-h-[70dvh] w-full';
+      video.setAttribute('aria-label', botao.dataset.titulo ?? '');
+      midia.append(video);
+    } else {
+      const imagem = document.createElement('img');
+      imagem.src = botao.dataset.grande ?? '';
+      imagem.alt = botao.dataset.descricao ?? '';
+      imagem.className = 'max-h-[70dvh] w-auto max-w-full object-contain';
+      midia.append(imagem);
+    }
+    titulo.textContent = botao.dataset.titulo ?? '';
+    descricao.textContent = botao.dataset.descricao ?? '';
+    dialogo.showModal();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-abrir]').forEach((botao) => {
+    botao.addEventListener('click', () => abrir(botao));
+  });
+
+  document.getElementById('lightbox-fechar')?.addEventListener('click', () => dialogo?.close());
+  // Clicar fora do conteúdo (no fundo escuro) fecha.
+  dialogo?.addEventListener('click', (evento) => {
+    if (evento.target === dialogo) dialogo.close();
+  });
+  // O link para o orçamento leva a página até o formulário e fecha a janela.
+  document.getElementById('lightbox-cta')?.addEventListener('click', () => dialogo?.close());
+  // Ao fechar (Esc, botão ou fundo), remove a mídia: isso também para o vídeo.
+  dialogo?.addEventListener('close', () => midia?.replaceChildren());
+</script>

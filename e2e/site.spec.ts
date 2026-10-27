@@ -26,8 +26,114 @@ async function preencherPasso2(page: Page) {
 
 test('deve caber na tela sem rolagem horizontal quando abre a home', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'DK Revestimentos' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: /Madeira trabalhada sob medida/ }),
+  ).toBeVisible();
   await semRolagemHorizontal(page);
+});
+
+test('deve ter texto alternativo e dimensões em todas as imagens quando a home carrega', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const problemas = await page.evaluate(() =>
+    [...document.querySelectorAll('img')]
+      .filter(
+        (img) =>
+          !img.getAttribute('alt') || !img.getAttribute('width') || !img.getAttribute('height'),
+      )
+      .map((img) => img.currentSrc || img.src),
+  );
+  expect(problemas, 'imagens sem alt/width/height').toEqual([]);
+});
+
+test('deve priorizar o carregamento da foto do topo quando a home abre', async ({ page }) => {
+  await page.goto('/');
+  const foto = page.locator('main section').first().locator('img');
+  await expect(foto).toHaveAttribute('fetchpriority', 'high');
+  await expect(foto).not.toHaveAttribute('loading', 'lazy');
+});
+
+test('deve mostrar só os trabalhos da categoria quando o visitante filtra o portfólio', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const itens = page.locator('#portfolio [data-item]:not([hidden])');
+  await expect(itens).toHaveCount(14);
+
+  await page.getByRole('button', { name: 'Áreas externas' }).click();
+  await expect(itens).toHaveCount(5);
+  await expect(page.getByRole('button', { name: 'Áreas externas' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  await page.getByRole('button', { name: 'Todos' }).click();
+  await expect(itens).toHaveCount(14);
+});
+
+test('deve ampliar a foto e fechar com Esc quando o visitante abre um trabalho', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Ampliar a foto: Estante em escada' }).click();
+
+  const janela = page.getByRole('dialog', { name: 'Estante em escada' });
+  await expect(janela).toBeVisible();
+  await expect(janela.getByRole('img')).toBeVisible();
+  await expect(janela.getByRole('link', { name: 'Pedir orçamento' })).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(janela).toBeHidden();
+});
+
+test('deve tocar o vídeo e parar ao fechar quando o visitante abre um vídeo', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /Assistir ao vídeo: Escrivaninha/ }).click();
+
+  const janela = page.getByRole('dialog', { name: 'Escrivaninha com gavetas' });
+  await expect(janela.locator('video')).toBeVisible();
+
+  await janela.getByRole('button', { name: 'Fechar' }).click();
+  await expect(janela).toBeHidden();
+  // A mídia é removida ao fechar (o que também para o vídeo).
+  await expect(page.locator('#lightbox-midia *')).toHaveCount(0);
+});
+
+test('deve mostrar a barra de ações só no celular, fora do topo e do formulário', async ({
+  page,
+}, info) => {
+  await page.goto('/');
+  const barra = page.locator('#barra-cta');
+  const largura = info.project.use.viewport?.width ?? 0;
+
+  if (largura >= 768) {
+    await expect(barra).toBeHidden();
+    return;
+  }
+  // No topo ela fica escondida (o topo já tem os mesmos botões).
+  await expect(barra).toHaveAttribute('inert', '');
+  // No meio da página, aparece.
+  await page.locator('#servicos').scrollIntoViewIfNeeded();
+  await expect(barra).not.toHaveAttribute('inert', '');
+  // No formulário, some de novo.
+  await page.locator('#orcamento').scrollIntoViewIfNeeded();
+  await expect(barra).toHaveAttribute('inert', '');
+});
+
+test('deve oferecer a navegação do jeito certo quando a tela muda de tamanho', async ({
+  page,
+}, info) => {
+  await page.goto('/');
+  const largura = info.project.use.viewport?.width ?? 0;
+
+  if (largura < 768) {
+    await page.getByText('Menu', { exact: true }).click();
+    await expect(page.getByRole('link', { name: 'Portfólio' })).toBeVisible();
+  } else {
+    await expect(page.getByRole('navigation', { name: 'Principal' })).toBeVisible();
+    await expect(page.getByText('Menu', { exact: true })).toBeHidden();
+  }
 });
 
 test('deve pedir o nome quando o passo 1 é enviado vazio', async ({ page }) => {

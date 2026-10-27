@@ -1,0 +1,49 @@
+---
+// Textos escritos para a v2 (sem números nem promessas que o cliente não confirmou).
+const servicos = [
+  {
+    titulo: 'Painéis e revestimentos',
+    texto:
+      'Ripados e painéis de madeira para paredes, fachadas e portões, com acabamento pensado para cada ambiente.',
+  },
+  {
+    titulo: 'Marcenaria sob medida',
+    texto:
+      'Peças feitas para o seu espaço: estantes, mesas, bancos, poltronas e detalhes que não se encontram prontos.',
+  },
+  {
+    titulo: 'Cozinhas, closets e suítes',
+    texto: 'Móveis planejados que aproveitam cada medida do ambiente e acompanham a sua rotina.',
+  },
+  {
+    titulo: 'Ambientes externos',
+    texto: 'Decks, bancos e áreas de convivência ao ar livre, projetados para o uso externo.',
+  },
+  {
+    titulo: 'Espaços corporativos e comerciais',
+    texto:
+      'Mobiliário e revestimentos para lojas, escritórios e restaurantes, alinhados à identidade do local.',
+  },
+  {
+    titulo: 'Projeto personalizado',
+    texto:
+      'Tem uma ideia diferente? Conte o que imagina e avaliamos juntos como transformá-la em realidade.',
+  },
+];
+---
+
+<section id="servicos" class="scroll-mt-16 px-4 py-20">
+  <div class="mx-auto max-w-6xl">
+    <p class="text-carvalho-700 text-sm tracking-[0.2em] uppercase">O que fazemos</p>
+    <h2 class="mt-3 max-w-2xl text-3xl sm:text-4xl">Da peça única ao ambiente completo</h2>
+
+    <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {servicos.map((servico) => (
+        <li class="border-ebano-200 rounded-xl border bg-white p-6">
+          <h3 class="text-xl">{servico.titulo}</h3>
+          <p class="text-texto-suave mt-3 leading-relaxed">{servico.texto}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

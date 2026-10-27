@@ -1,0 +1,42 @@
+---
+const etapas = [
+  {
+    titulo: 'Conversa',
+    texto: 'Você conta o que precisa e nós avaliamos o espaço e as suas ideias.',
+  },
+  {
+    titulo: 'Projeto e orçamento',
+    texto: 'Definimos medidas, materiais e acabamento, e você recebe o orçamento.',
+  },
+  {
+    titulo: 'Produção na oficina',
+    texto: 'As peças são produzidas com acompanhamento em cada etapa.',
+  },
+  {
+    titulo: 'Montagem e entrega',
+    texto: 'Levamos até o local, montamos e entregamos o ambiente pronto.',
+  },
+];
+---
+
+<section id="processo" class="scroll-mt-16 px-4 py-20">
+  <div class="mx-auto max-w-6xl">
+    <p class="text-carvalho-700 text-sm tracking-[0.2em] uppercase">Como trabalhamos</p>
+    <h2 class="mt-3 max-w-2xl text-3xl sm:text-4xl">Do primeiro contato à montagem</h2>
+
+    <ol class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {etapas.map((etapa, i) => (
+        <li>
+          <span
+            class="text-carvalho-600 font-(family-name:--font-display) text-4xl"
+            aria-hidden="true"
+          >
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <h3 class="mt-2 text-xl">{etapa.titulo}</h3>
+          <p class="text-texto-suave mt-2 leading-relaxed">{etapa.texto}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

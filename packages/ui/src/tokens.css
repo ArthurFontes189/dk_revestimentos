@@ -45,9 +45,9 @@
   --color-creme: #f9f8f5;
   --color-texto-suave: #526074;
 
-  /* Tipografia — a fonte serifada de títulos ainda será escolhida e carregada (self-host). */
-  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-display: ui-serif, Georgia, 'Times New Roman', serif;
+  /* Tipografia — fontes hospedadas no próprio site (@fontsource-variable), sem Google Fonts. */
+  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', ui-serif, Georgia, 'Times New Roman', serif;
 
   /* Raios (iguais à v1) */
   --radius-sm: 4px;

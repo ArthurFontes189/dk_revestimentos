@@ -8,7 +8,7 @@
 ## Em andamento
 
 - [ ] **E1 e E2 funcionando em produção** (login, formulário, gravação de lead e CRM, testados pelo dono). Playwright já cobre o site e o painel nas 4 larguras (48 execuções passando). Restam, e passam para a E9 se não forem feitos antes: URL de redirecionamento da recuperação de senha, tema escuro e divisão do bundle do painel.
-- [ ] **Próxima: E3 — Site público premium.**
+- [ ] **E3 — Site público premium, em andamento.** Feito: home, portfólio, fontes e testes (72 execuções no Playwright). Falta: SEO, política de privacidade, banner de cookies, Meta Pixel, landing pages e medir o Lighthouse.
 
 ## Próximas
 
@@ -51,11 +51,13 @@ Spec: #3, #4 (UTM), #6.
 _Utilizável:_ o site completo no ar, pronto para receber tráfego (já com WhatsApp real quando o cliente informar).
 Spec: #1, #2, #4, #14 (site), direção visual.
 
-- [ ] Escolha e carregamento (self-host) da fonte serifada de títulos
-- [ ] Pipeline de mídia (`packages/media` e script de importação): otimizar fotos/vídeos da v1 e enviar ao Storage (`ffmpeg` necessário)
-- [ ] Migration `portfolio_items` + bucket `portfolio` + seed dos 15 projetos com textos novos
-- [ ] Home: hero, serviços, processo, portfólio com filtro e lightbox, CTA fixo no celular, botão de WhatsApp
-- [ ] Textos recriados em pt-BR para aprovação do cliente (sem números ou fatos inventados)
+- [x] Fontes hospedadas no próprio site: Fraunces (títulos) e Plus Jakarta Sans (texto)
+- [x] Mídias da v1 reaproveitadas: 9 fotos e 5 vídeos (comprimidos com `ffmpeg`, sem áudio); o PDF era a mesma foto do oratório e ficou de fora. Imagens otimizadas em WebP no build (62 variantes)
+- [x] Home: topo com foto real, serviços, portfólio (14 itens) com filtro por categoria e ampliação (foto e vídeo), como trabalhamos, orçamento, rodapé; menu sem JavaScript no celular; barra de ações fixa no celular (some no topo e no formulário)
+- [x] Textos recriados em pt-BR, sem números nem fatos inventados (**aguardam aprovação do cliente**); títulos e descrições do portfólio escritos a partir do que as fotos mostram
+- [ ] **Portfólio provisório:** hoje os 14 itens vivem no código (`apps/site/src/data/portfolio.ts`). A E4 os move para o banco e o Storage, com edição pelo painel. Decidir como o site estático reflete mudanças (rebuild automático ao publicar)
+- [ ] Decidir sobre o `legado/assets/hero-bg.jpg`: parece render ou banco de imagens, não uma obra da DK; **não foi usado**. Só entra se o cliente confirmar que é dele ou tiver os direitos
+- [ ] Migration `portfolio_items` + bucket `portfolio` (junto com a E4)
 - [ ] SEO: meta, Open Graph, dados estruturados de negócio local, sitemap, política de privacidade
 - [ ] Banner de cookies (LGPD) + Meta Pixel (`PageView`, `ViewContent`, `Contact`, `Lead`), desligado sem ID
 - [ ] Landing pages para anúncios
