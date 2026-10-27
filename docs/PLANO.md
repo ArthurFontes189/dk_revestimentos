@@ -7,7 +7,7 @@
 
 ## Em andamento
 
-- [ ] Aguardando você escolher a primeira entrega (sugestão: **E1**).
+- [ ] **E1 — Banco e login** (veja abaixo). Falta aplicar a migration no Supabase real, validar o login de ponta a ponta e o Playwright.
 
 ## Próximas
 
@@ -16,14 +16,18 @@
 _Utilizável:_ o admin entra no painel com e-mail e senha e vê o menu vazio; o banco existe com segurança correta.
 Spec: #5, #14 (parte), #13 do painel responsivo.
 
-- [ ] Migration base: enums (status, tipos, categorias), função `updated_at`, tabela `leads`
-- [ ] RLS: anônimo só insere lead; autenticado acessa tudo; cadastro público de usuários desligado
-- [ ] Testes de RLS (pgTAP), rodando no CI (o Docker do CI cobre a falta de Docker local)
-- [ ] Painel: login, logout, recuperação de senha, rota protegida, rotas por hash
-- [ ] Layout responsivo do painel: menu lateral no PC, navegação inferior no celular, tema claro/escuro
-- [ ] Playwright: login e larguras 360/768/1280/1920 sem rolagem horizontal
+- [x] Migration base (`supabase/migrations/20261027120000_base.sql`): enums, `updated_at`, `admins`, `is_admin()`, `leads`
+- [x] RLS: anônimo só insere lead (colunas do formulário, sem escolher status); só quem está em `admins` acessa; default privileges sem acesso amplo
+- [x] Testes de RLS (pgTAP, 14 casos) no CI com Supabase local: **passando** (`Tests=14`, `Result: PASS`)
+- [x] Painel: login, logout, recuperação de senha (PKCE), guard por admin, rotas por hash (código e build ok; **login real ainda não testado**)
+- [x] Layout responsivo do painel: menu lateral no PC, navegação inferior no celular (**celular não verificado visualmente**)
+- [ ] Tema escuro opcional do painel
+- [ ] Aplicar a migration no Supabase real e inserir o admin em `admins` (aguarda autorização)
+- [ ] Desligar o cadastro público no Supabase real (Authentication → Sign In / Providers)
+- [ ] Playwright: login (com sessão simulada) e larguras 360/768/1280/1920 sem rolagem horizontal
+- [ ] Dividir o bundle do painel (hoje 598 kB, 175 kB comprimido) quando houver módulos reais
 
-**Precisa de você:** chave publishable do Supabase; criar o usuário admin no painel do Supabase (e-mail e senha de sua escolha); autorizar `supabase link` e `db push` (ou colar o SQL no SQL Editor).
+**Precisa de você:** autorizar a aplicação da migration no projeto Supabase real (a E1 só fecha depois disso).
 
 ### E2 — Captação de leads (já gera valor para os anúncios)
 
