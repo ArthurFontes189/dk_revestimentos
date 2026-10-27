@@ -7,7 +7,8 @@
 
 ## Em andamento
 
-- [ ] **E1 — Banco e login** (veja abaixo). Banco aplicado e verificado. Falta você testar o login, a URL de redirecionamento e o Playwright.
+- [ ] **E1 e E2 funcionando em produção** (login, formulário, gravação de lead e CRM, testados pelo dono). Restam, e passam para a E9 se não forem feitos antes: Playwright, URL de redirecionamento da recuperação de senha, tema escuro e divisão do bundle do painel.
+- [ ] **Próxima: E3 — Site público premium.**
 
 ## Próximas
 
@@ -25,7 +26,7 @@ Spec: #5, #14 (parte), #13 do painel responsivo.
 - [x] Migration aplicada no Supabase real e admin inserido em `admins` (verificado: tabelas antigas intactas com RLS; anônimo só insere as 10 colunas do formulário)
 - [x] ~~Desligar o cadastro público~~ — **não será desligado**: o projeto é compartilhado com outro app que pode depender dele; a tabela `admins` já protege os dados da DK
 - [ ] Autorizar a URL do painel em Authentication → URL Configuration → Redirect URLs (necessário para a recuperação de senha)
-- [ ] Você testar o login em https://arthurfontes189.github.io/dk_revestimentos/admin/ (mesma conta do outro app)
+- [x] Login testado pelo dono em https://arthurfontes189.github.io/dk_revestimentos/admin/
 - [ ] Playwright: login (com sessão simulada) e larguras 360/768/1280/1920 sem rolagem horizontal
 - [ ] Dividir o bundle do painel (hoje 598 kB, 175 kB comprimido) quando houver módulos reais
 
@@ -42,7 +43,7 @@ Spec: #3, #4 (UTM), #6.
 - [x] Layouts de CRM: cards no celular alternando com o detalhe; lista + detalhe lado a lado no PC (**celular não verificado visualmente**)
 - [x] Regras testadas no `@dk/core`: origem, mensagem de orçamento, filtros de leads, formatação de telefone (46 testes)
 - [ ] Teste ponta a ponta (Playwright): enviar orçamento e vê-lo no CRM, nas larguras 360/768/1280/1920
-- [ ] Você enviar um orçamento de teste no site publicado e conferir se aparece em Leads (depois exclua-o)
+- [x] Orçamento de teste enviado no site publicado e visto em Leads pelo dono: formulário, gravação e CRM funcionam em produção
 - [ ] Rate limit / captcha no formulário público se aparecer spam (hoje só a isca anti-spam e as validações do banco)
 
 ### E3 — Site público premium
