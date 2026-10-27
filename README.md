@@ -10,7 +10,7 @@ Reformulação da v1 (mantida em `legado/`, somente leitura) com stack moderna e
 
 ## Como rodar
 
-Requisitos: Node 22+ e pnpm. No Windows, use o Git Bash (veja "Armadilhas" no `CLAUDE.md`).
+Requisitos: Node 24 (mínimo 22.23.4) e pnpm. No Windows, use o Git Bash (veja "Armadilhas" no `CLAUDE.md`).
 
 ```bash
 pnpm install

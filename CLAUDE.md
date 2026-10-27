@@ -12,7 +12,7 @@
 
 ## Stack
 
-- Linguagem/Runtime: TypeScript estrito + Node 22+
+- Linguagem/Runtime: TypeScript estrito + Node 24 (mínimo 22.23.4, exigência do Astro; o CI usa 24)
 - Site público: Astro 5+ (ilhas React só onde há interação) · Painel: React + Vite em `/admin`
 - Estilo: Tailwind v4 com tokens em `packages/ui/src/tokens.css`
 - Backend: Supabase **novo** (Postgres + Auth de 1 usuário + Storage + Edge Functions). Nada do projeto da v1.
