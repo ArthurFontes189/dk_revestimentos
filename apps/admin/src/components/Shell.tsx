@@ -6,6 +6,8 @@ import { useSessao } from '../features/auth/SessaoProvider';
 const ITENS_MENU = [
   { para: '/', rotulo: 'Início' },
   { para: '/leads', rotulo: 'Leads' },
+  { para: '/portfolio', rotulo: 'Portfólio' },
+  { para: '/depoimentos', rotulo: 'Depoimentos' },
 ] as const;
 
 const classeLinkBase =

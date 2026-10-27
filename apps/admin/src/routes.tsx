@@ -3,6 +3,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
   Navigate,
   Outlet,
 } from '@tanstack/react-router';
@@ -49,11 +50,33 @@ const leads = createRoute({
   path: '/leads',
   component: LeadsPage,
 });
+// Páginas com o processamento de mídia ficam em arquivos separados, carregados só quando abertas.
+const portfolio = createRoute({
+  getParentRoute: () => protegida,
+  path: '/portfolio',
+  component: lazyRouteComponent(
+    () => import('./features/portfolio/PortfolioPage'),
+    'PortfolioPage',
+  ),
+});
+const depoimentos = createRoute({
+  getParentRoute: () => protegida,
+  path: '/depoimentos',
+  component: lazyRouteComponent(
+    () => import('./features/depoimentos/DepoimentosPage'),
+    'DepoimentosPage',
+  ),
+});
 
 // Rota por hash (/admin/#/...): o GitHub Pages não tem rewrites.
 export const router = createRouter({
-  routeTree: raiz.addChildren([login, redefinirSenha, protegida.addChildren([inicio, leads])]),
+  routeTree: raiz.addChildren([
+    login,
+    redefinirSenha,
+    protegida.addChildren([inicio, leads, portfolio, depoimentos]),
+  ]),
   history: createHashHistory(),
+  defaultPendingComponent: Carregando,
 });
 
 declare module '@tanstack/react-router' {
