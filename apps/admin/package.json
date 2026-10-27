@@ -12,6 +12,8 @@
   "dependencies": {
     "@dk/core": "workspace:*",
     "@dk/ui": "workspace:*",
+    "@supabase/supabase-js": "^2.118.0",
+    "@tanstack/react-router": "^1.170.46",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

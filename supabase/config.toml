@@ -1,0 +1,12 @@
+# Configuração do Supabase LOCAL (supabase start). Não altera o projeto remoto.
+project_id = "dk-revestimentos"
+
+[api]
+enabled = true
+
+[db]
+major_version = 17
+
+[auth]
+# Cadastro público desligado: o único admin é criado manualmente.
+enable_signup = false

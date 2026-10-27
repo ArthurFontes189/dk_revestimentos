@@ -24,3 +24,15 @@ jobs:
         env:
           # Valor fictício: o build falha de propósito sem número de WhatsApp.
           PUBLIC_WHATSAPP_NUMBER: '5561900000000'
+
+  banco:
+    # Sobe um Supabase LOCAL (Docker do runner), aplica as migrations e roda os testes de RLS.
+    # Nunca toca o projeto remoto.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - run: supabase start
+      - run: supabase test db
