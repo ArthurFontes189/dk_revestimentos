@@ -12,6 +12,7 @@ import { LoginPage } from './features/auth/LoginPage';
 import { RedefinirSenhaPage } from './features/auth/RedefinirSenhaPage';
 import { useSessao } from './features/auth/SessaoProvider';
 import { InicioPage } from './features/inicio/InicioPage';
+import { LeadsPage } from './features/leads/LeadsPage';
 import { supabaseConfigurado } from './lib/supabase';
 
 /** Área protegida: só admin logado entra. */
@@ -43,10 +44,15 @@ const protegida = createRoute({
   component: AreaProtegida,
 });
 const inicio = createRoute({ getParentRoute: () => protegida, path: '/', component: InicioPage });
+const leads = createRoute({
+  getParentRoute: () => protegida,
+  path: '/leads',
+  component: LeadsPage,
+});
 
 // Rota por hash (/admin/#/...): o GitHub Pages não tem rewrites.
 export const router = createRouter({
-  routeTree: raiz.addChildren([login, redefinirSenha, protegida.addChildren([inicio])]),
+  routeTree: raiz.addChildren([login, redefinirSenha, protegida.addChildren([inicio, leads])]),
   history: createHashHistory(),
 });
 

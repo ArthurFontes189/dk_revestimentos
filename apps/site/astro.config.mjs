@@ -1,3 +1,4 @@
+import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 
@@ -8,6 +9,7 @@ export default defineConfig({
   site: process.env.SITE_URL ?? 'http://localhost:4321',
   base,
   trailingSlash: 'always',
+  integrations: [react()],
   // Lê o .env da raiz do monorepo (um só arquivo para site e painel).
   vite: { plugins: [tailwindcss()], envDir: '../../' },
 });

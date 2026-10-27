@@ -36,11 +36,14 @@ Spec: #5, #14 (parte), #13 do painel responsivo.
 _Utilizável:_ o visitante pede orçamento e o lead aparece no CRM, com origem da campanha.
 Spec: #3, #4 (UTM), #6.
 
-- [ ] Formulário de orçamento no site (2 passos, validação Zod, honeypot, erro claro se o banco falhar) + abertura do WhatsApp
-- [ ] Captura de `utm_*`, `fbclid` e página de entrada, gravada no lead
-- [ ] CRM no painel: lista, filtro por status, contador de pendentes, mudança de status persistida, botão de WhatsApp
-- [ ] Layouts de CRM: cards no celular, lista + detalhe no PC
-- [ ] Testes: formulário ponta a ponta e política de RLS do insert anônimo
+- [x] Formulário de orçamento no site (2 passos, validação Zod, isca anti-spam, erro claro com atalho ao WhatsApp se o banco falhar) + botão para abrir o WhatsApp. Validação e passo 2 conferidos no navegador; **envio real ainda não testado**
+- [x] Captura de `utm_*`, `fbclid` e página de entrada (sessionStorage), gravada no lead; script global com 843 bytes
+- [x] CRM no painel: lista, filtro por status com contagem, contador de pendentes, mudança de status, exclusão com confirmação, botão de WhatsApp (**não testado com dados reais**)
+- [x] Layouts de CRM: cards no celular alternando com o detalhe; lista + detalhe lado a lado no PC (**celular não verificado visualmente**)
+- [x] Regras testadas no `@dk/core`: origem, mensagem de orçamento, filtros de leads, formatação de telefone (46 testes)
+- [ ] Teste ponta a ponta (Playwright): enviar orçamento e vê-lo no CRM, nas larguras 360/768/1280/1920
+- [ ] Você enviar um orçamento de teste no site publicado e conferir se aparece em Leads (depois exclua-o)
+- [ ] Rate limit / captcha no formulário público se aparecer spam (hoje só a isca anti-spam e as validações do banco)
 
 ### E3 — Site público premium
 

@@ -27,5 +27,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     <slot />
+    <script>
+      // Guarda de qual anúncio/campanha o visitante veio, para gravar no lead.
+      import { capturarOrigem } from '../lib/origem-cliente';
+      capturarOrigem();
+    </script>
   </body>
 </html>

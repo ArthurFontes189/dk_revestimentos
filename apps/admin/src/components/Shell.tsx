@@ -3,7 +3,10 @@ import type { ReactNode } from 'react';
 import { useSessao } from '../features/auth/SessaoProvider';
 
 // Cada entrega do docs/PLANO.md acrescenta o seu item aqui (leads, clientes, obras…).
-const ITENS_MENU = [{ para: '/', rotulo: 'Início' }] as const;
+const ITENS_MENU = [
+  { para: '/', rotulo: 'Início' },
+  { para: '/leads', rotulo: 'Leads' },
+] as const;
 
 const classeLinkBase =
   'focus-visible:outline-ouro-500 flex min-h-11 items-center rounded-lg px-3 transition-colors focus-visible:outline-2';

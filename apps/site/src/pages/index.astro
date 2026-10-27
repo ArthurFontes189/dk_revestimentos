@@ -1,31 +1,50 @@
 ---
 import { montarLinkWhatsApp } from '@dk/core';
+import FormularioOrcamento from '../components/FormularioOrcamento';
 import Base from '../layouts/Base.astro';
 
-// Esqueleto: a home premium é a entrega "site público" do docs/PLANO.md.
-const whatsapp = montarLinkWhatsApp(
-  import.meta.env.PUBLIC_WHATSAPP_NUMBER ?? '',
-  'Olá! Gostaria de pedir um orçamento.',
-);
+// Esqueleto: a home premium é a entrega E3 do docs/PLANO.md.
+const numeroWhatsApp = import.meta.env.PUBLIC_WHATSAPP_NUMBER ?? '';
+const whatsapp = montarLinkWhatsApp(numeroWhatsApp, 'Olá! Gostaria de pedir um orçamento.');
 ---
 
 <Base
   title="DK Revestimentos | Marcenaria e revestimentos sob medida"
   description="Marcenaria e revestimentos sob medida. Peça seu orçamento pelo WhatsApp."
 >
-  <main class="bg-ebano-950 text-creme grid min-h-dvh place-items-center px-4 py-16">
-    <div class="max-w-xl text-center">
-      <p class="text-ouro-500 text-sm tracking-[0.2em] uppercase">Marcenaria sob medida</p>
-      <h1 class="mt-4 font-(family-name:--font-display) text-4xl sm:text-5xl lg:text-6xl">
-        DK Revestimentos
-      </h1>
-      <p class="mt-6 text-ebano-100 text-lg">Site em construção.</p>
-      <a
-        href={whatsapp}
-        class="bg-carvalho-600 text-creme hover:bg-carvalho-700 focus-visible:outline-ouro-500 mt-8 inline-flex min-h-11 items-center rounded-lg px-6 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
-      >
-        Pedir orçamento
-      </a>
-    </div>
+  <main>
+    <section class="bg-ebano-950 text-creme grid min-h-[70dvh] place-items-center px-4 py-16">
+      <div class="max-w-xl text-center">
+        <p class="text-ouro-500 text-sm tracking-[0.2em] uppercase">Marcenaria sob medida</p>
+        <h1 class="mt-4 font-(family-name:--font-display) text-4xl sm:text-5xl lg:text-6xl">
+          DK Revestimentos
+        </h1>
+        <p class="text-ebano-100 mt-6 text-lg">Site em construção.</p>
+        <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <a
+            href="#orcamento"
+            class="bg-carvalho-600 text-creme hover:bg-carvalho-700 focus-visible:outline-ouro-500 inline-flex min-h-11 items-center rounded-lg px-6 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            Pedir orçamento
+          </a>
+          <a
+            href={whatsapp}
+            class="text-ouro-500 focus-visible:outline-ouro-500 inline-flex min-h-11 items-center px-4 underline focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            Falar no WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="orcamento" class="px-4 py-16">
+      <div class="mx-auto max-w-md">
+        <h2 class="font-(family-name:--font-display) text-3xl">Peça seu orçamento</h2>
+        <p class="text-texto-suave mt-2">Leva menos de um minuto.</p>
+        <div class="mt-8">
+          <FormularioOrcamento client:visible numeroWhatsApp={numeroWhatsApp} />
+        </div>
+      </div>
+    </section>
   </main>
 </Base>
