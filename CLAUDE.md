@@ -78,3 +78,6 @@ legado/          v1 (somente leitura, fora do git da v2)
 - **Hooks:** o hook bloqueia editar `.env*` (exceto `.env.example`), lockfiles e `.git/`. O `rm -rf` é negado pelas permissões.
 - **`corbina/`:** é um worktree git de outra branch, alheio a este projeto. Não mexa; está no `.gitignore`.
 - **Supabase gratuito** pausa após 1 semana sem uso e não tem backup. Produção exige plano Pro.
+- **Projeto Supabase COMPARTILHADO** (`kkclcjejrvwxdlxknlbi`) com outro app (tabelas `notebooks`, `sources`, `chunks`, `profiles` e bucket `sources`, com dados). Nunca altere esses objetos, nunca mude `default privileges` do schema `public` e nunca desligue o cadastro público (quebraria o outro app). O login (`auth.users`) é o mesmo; a DK protege os dados pela tabela `admins`.
+- **Migrations aplicadas à mão:** a `20261027120000_base` foi colada no SQL Editor e não consta em `supabase_migrations`. Antes do primeiro `supabase db push`, rode `supabase migration repair --status applied 20261027120000`, senão o push tenta recriar tudo e falha.
+- **Recuperação de senha:** o e-mail volta para `<SITE_URL><BASE_PATH>admin/`; essa URL precisa estar em Authentication → URL Configuration → Redirect URLs.

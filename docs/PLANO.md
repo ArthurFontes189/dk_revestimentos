@@ -7,7 +7,7 @@
 
 ## Em andamento
 
-- [ ] **E1 — Banco e login** (veja abaixo). Falta aplicar a migration no Supabase real, validar o login de ponta a ponta e o Playwright.
+- [ ] **E1 — Banco e login** (veja abaixo). Banco aplicado e verificado. Falta você testar o login, a URL de redirecionamento e o Playwright.
 
 ## Próximas
 
@@ -22,12 +22,14 @@ Spec: #5, #14 (parte), #13 do painel responsivo.
 - [x] Painel: login, logout, recuperação de senha (PKCE), guard por admin, rotas por hash (código e build ok; **login real ainda não testado**)
 - [x] Layout responsivo do painel: menu lateral no PC, navegação inferior no celular (**celular não verificado visualmente**)
 - [ ] Tema escuro opcional do painel
-- [ ] Aplicar a migration no Supabase real e inserir o admin em `admins` (aguarda autorização)
-- [ ] Desligar o cadastro público no Supabase real (Authentication → Sign In / Providers)
+- [x] Migration aplicada no Supabase real e admin inserido em `admins` (verificado: tabelas antigas intactas com RLS; anônimo só insere as 10 colunas do formulário)
+- [x] ~~Desligar o cadastro público~~ — **não será desligado**: o projeto é compartilhado com outro app que pode depender dele; a tabela `admins` já protege os dados da DK
+- [ ] Autorizar a URL do painel em Authentication → URL Configuration → Redirect URLs (necessário para a recuperação de senha)
+- [ ] Você testar o login em https://arthurfontes189.github.io/dk_revestimentos/admin/ (mesma conta do outro app)
 - [ ] Playwright: login (com sessão simulada) e larguras 360/768/1280/1920 sem rolagem horizontal
 - [ ] Dividir o bundle do painel (hoje 598 kB, 175 kB comprimido) quando houver módulos reais
 
-**Precisa de você:** autorizar a aplicação da migration no projeto Supabase real (a E1 só fecha depois disso).
+**Precisa de você:** testar o login no painel publicado e autorizar a URL de redirecionamento (ou me pedir para fazê-lo).
 
 ### E2 — Captação de leads (já gera valor para os anúncios)
 
