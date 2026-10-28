@@ -81,7 +81,8 @@ function perguntar(pergunta, oculto = false) {
     rl.question(pergunta, (resposta) => {
       rl.close();
       if (oculto) process.stdout.write('\n');
-      resolver(resposta.trim());
+      // A senha é usada exatamente como foi digitada (sem cortar espaços); o resto é limpo.
+      resolver(oculto ? resposta : resposta.trim());
     });
   });
 }
@@ -93,11 +94,27 @@ async function conectar() {
       'Este script pede a senha do admin e precisa de um terminal interativo. Abra o seu terminal (Git Bash, PowerShell ou CMD) na pasta do projeto e rode o comando lá.',
     );
   }
-  const url = process.env.VITE_SUPABASE_URL;
-  const chave = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const url = process.env.VITE_SUPABASE_URL?.trim().replace(/\/$/, '');
+  const chave = process.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim();
   if (!url || !chave) {
     throw new Error(
       'Defina VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY (use --env-file=.env).',
+    );
+  }
+  // Confere o formato do .env ANTES de pedir a senha (sem nunca imprimir os valores).
+  if (!/^https:\/\/[a-z0-9]+\.supabase\.co$/.test(url)) {
+    throw new Error(
+      'VITE_SUPABASE_URL deve ser como https://SEU-PROJETO.supabase.co (sem barra no fim, sem aspas, sem caminho).',
+    );
+  }
+  if (chave.startsWith('sb_secret_')) {
+    throw new Error(
+      'A chave do .env é a SECRET. Troque pela PUBLISHABLE (sb_publishable_...). Nunca use a secret aqui.',
+    );
+  }
+  if (!chave.startsWith('sb_publishable_')) {
+    throw new Error(
+      'VITE_SUPABASE_PUBLISHABLE_KEY não parece uma chave publishable (deve começar com sb_publishable_). Confira se não há aspas, espaços ou quebra de linha.',
     );
   }
   const { createClient } = createRequire(resolve(raiz, 'apps/admin/package.json'))(
@@ -106,8 +123,15 @@ async function conectar() {
   const cliente = createClient(url, chave, { auth: { persistSession: false } });
   const email = await perguntar('E-mail do admin: ');
   const senha = await perguntar('Senha: ', true);
+  // Só o tamanho: ajuda a perceber uma senha colada/digitada errado, sem revelar nada.
+  escrever(`(senha lida: ${senha.length} caracteres)`);
   const { error } = await cliente.auth.signInWithPassword({ email, password: senha });
-  if (error) throw new Error('Não foi possível entrar: e-mail ou senha incorretos.');
+  if (error) {
+    // Mostra o motivo REAL: credencial errada, chave de API inválida e falha de rede são coisas diferentes.
+    throw new Error(
+      `Não foi possível entrar: ${error.message}${error.status ? ` (HTTP ${error.status})` : ''}.`,
+    );
+  }
   const { data: ehAdmin } = await cliente.rpc('is_admin');
   if (ehAdmin !== true) throw new Error('Esta conta não está na lista de admins da DK.');
   return cliente;
