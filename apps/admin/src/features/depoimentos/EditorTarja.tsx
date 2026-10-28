@@ -97,7 +97,7 @@ export function EditorTarja({ arquivo, ocupado, aoEnviar, aoPular }: Props) {
           src={previa}
           alt=""
           draggable={false}
-          className="block max-h-[55dvh] w-auto max-w-full rounded-lg"
+          className="block max-h-[42dvh] w-auto max-w-full rounded-lg"
         />
         {tarjas.map((t, i) => (
           <div key={i} data-tarja className="absolute bg-black" style={estiloDaTarja(t)} />

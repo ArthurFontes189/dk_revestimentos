@@ -17,7 +17,8 @@
     "test": "vitest run",
     "build:e2e": "node scripts/build-e2e.mjs",
     "test:e2e": "playwright test",
-    "build": "pnpm -r --if-present build && node scripts/montar-dist.mjs"
+    "build": "pnpm -r --if-present build && node scripts/montar-dist.mjs",
+    "importar:portfolio": "node --env-file=.env scripts/importar-portfolio.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

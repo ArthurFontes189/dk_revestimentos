@@ -4,6 +4,10 @@ name: Deploy (GitHub Pages)
 on:
   push:
     branches: [main]
+  # Publica de novo a cada 30 minutos: o site é estático e lê o portfólio e os depoimentos do banco
+  # na hora do build, então é assim que as mudanças feitas no painel chegam ao site público.
+  schedule:
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 permissions:

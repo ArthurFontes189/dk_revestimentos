@@ -55,9 +55,8 @@ Spec: #1, #2, #4, #14 (site), direção visual.
 - [x] Mídias da v1 reaproveitadas: 9 fotos e 5 vídeos (comprimidos com `ffmpeg`, sem áudio); o PDF era a mesma foto do oratório e ficou de fora. Imagens otimizadas em WebP no build (62 variantes)
 - [x] Home: topo com foto real, serviços, portfólio (14 itens) com filtro por categoria e ampliação (foto e vídeo), como trabalhamos, orçamento, rodapé; menu sem JavaScript no celular; barra de ações fixa no celular (some no topo e no formulário)
 - [x] Textos recriados em pt-BR, sem números nem fatos inventados (**aguardam aprovação do cliente**); títulos e descrições do portfólio escritos a partir do que as fotos mostram
-- [ ] **Portfólio provisório:** hoje os 14 itens vivem no código (`apps/site/src/data/portfolio.ts`). A E4 os move para o banco e o Storage, com edição pelo painel. Decidir como o site estático reflete mudanças (rebuild automático ao publicar)
+- [x] Portfólio dos 14 itens: embutido no código como reserva e fonte do importador; a E4 o torna editável pelo painel
 - [ ] Decidir sobre o `legado/assets/hero-bg.jpg`: parece render ou banco de imagens, não uma obra da DK; **não foi usado**. Só entra se o cliente confirmar que é dele ou tiver os direitos
-- [ ] Migration `portfolio_items` + bucket `portfolio` (junto com a E4)
 - [x] SEO: título, descrição, canonical, Open Graph e Twitter (imagem 1200×630 absoluta), dados estruturados `Organization` sem telefone/endereço inventados, `sitemap.xml` e `robots.txt`, favicon próprio
 - [x] **Indexação desligada por padrão** (`noindex` + `robots` fechado) enquanto o site está em homologação; `PUBLIC_INDEXAR=true` liga no deploy de produção
 - [x] Política de privacidade (`/privacidade/`), texto-modelo alinhado à LGPD. **Falta o cliente informar razão social, CNPJ e e-mail de contato e revisar (idealmente com apoio jurídico) antes de divulgar com anúncios**
@@ -74,10 +73,20 @@ Spec: #1, #2, #4, #14 (site), direção visual.
 _Utilizável:_ o cliente publica projetos e depoimentos sozinho, sem mexer em código.
 Spec: #12, #13 (depoimentos).
 
-- [ ] Otimização no navegador (WebP em 3 larguras, blur, poster de vídeo) com limites de tamanho
-- [ ] Painel de portfólio: criar, editar, ordenar, destacar, publicar, excluir (remove os arquivos)
-- [ ] Migration `testimonials` + bucket `depoimentos`; aba de depoimentos com envio em lote, ordem, ocultar, tarja/recorte e aviso de privacidade
-- [ ] Seção de depoimentos no site, que só aparece com itens visíveis
+**Estado: código pronto e testado localmente; NADA enviado ao GitHub nem aplicado no Supabase real.**
+
+- [x] Migration `20261027200000_portfolio_depoimentos.sql`: tabelas `portfolio_items` e `testimonials`, buckets `portfolio` (25 MB, webp e mp4) e `depoimentos` (5 MB, webp) com leitura pública e escrita só do admin, RLS e políticas de Storage só dos buckets da DK. Testes pgTAP escritos (23 casos), **ainda não executados** (rodam no CI, que exige o push)
+- [x] `@dk/media`: larguras (480/960/1920 sem ampliar), hash do conteúdo no nome do arquivo (cache de 1 ano seguro), URLs públicas, validação (imagem até 15 MB; vídeo MP4 até 25 MB), tarja, conversão das linhas do banco; pipeline do navegador (WebP, blur, capa do vídeo)
+- [x] Painel de portfólio: novo item (foto ou vídeo), editar, subir/descer, ocultar/publicar, destacar, excluir (apaga também os arquivos)
+- [x] Painel de depoimentos: envio de várias imagens, **tarja de privacidade pintada nos pixels** (verificado: o pixel sob a tarja sai preto), nome e legenda opcionais, ordem, ocultar, excluir
+- [x] Site lê o portfólio e os depoimentos do banco **na publicação**; sem banco (ou banco vazio) usa os 14 itens embutidos. Seção de depoimentos só aparece com itens visíveis. Verificado com o banco inacessível: o build termina e usa a reserva
+- [x] Publicação automática a cada 30 minutos (`schedule` no `deploy.yml`) para o que o admin muda chegar ao site, sem tokens nem segredos
+- [x] Script `pnpm importar:portfolio` (importa os 14 itens atuais para o banco e o Storage; pede e-mail e senha no terminal; `--simular` testado: 14 itens, 33 arquivos WebP, 3,0 MB). **Ainda não executado de verdade**
+- [x] e2e: 36 execuções do painel de mídia + testes do site no modo "lido do banco" (192 no total)
+- [ ] **Autorização para aplicar a migration no Supabase real** (SQL Editor) e rodar o importador
+- [ ] Fazer o push para o CI rodar os testes pgTAP (a migration nunca foi executada em um Postgres)
+- [ ] Limitação conhecida: o Safari/iPhone não gera WebP no navegador; o painel avisa e pede Chrome, Edge ou Firefox (ou o computador) para enviar fotos
+- [ ] Trocar a mídia de um item existente (hoje só é possível excluir e criar de novo)
 
 ### E5 — Clientes e conversão de lead
 

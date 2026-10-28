@@ -79,6 +79,10 @@ legado/          v1 (somente leitura, fora do git da v2)
 - **Windows:** o atalho global `pnpm.cmd` desta máquina está quebrado no `cmd`/PowerShell. Rode `pnpm` pelo Git Bash. No Git Bash, um valor como `BASE_PATH=/x/` é convertido em caminho do Windows; defina-o via script Node ou PowerShell.
 - **ffmpeg:** instalado via winget (`Gyan.FFmpeg`), mas o PATH só vale em shell novo. Até lá, use o caminho completo em `%LOCALAPPDATA%\Microsoft\WinGet\Packages\Gyan.FFmpeg_*\ffmpeg-*\bin\ffmpeg.exe`.
 - **Testes e2e:** o Supabase é simulado por `page.route` (`e2e/apoio.ts`). O `build:e2e` usa `https://e2e.supabase.co`; nunca aponte os testes para o projeto real (eles criariam e apagariam leads de verdade).
+- **Mídia (E4):** o admin envia fotos/vídeos ao Storage já otimizadas no navegador (`@dk/media/navegador`): WebP em 480/960/1920 sem ampliar, nome com o hash do conteúdo e cache de 1 ano. Tarja de privacidade é pintada nos pixels antes de enviar. Safari não gera WebP (o painel avisa).
+- **Site estático e banco:** o site lê `portfolio_items` e `testimonials` na hora do build (`apps/site/src/lib/banco.ts`); se falhar ou vier vazio, usa os 14 itens de `portfolio-inicial.json`. Mudanças do painel só chegam ao site na próxima publicação (a cada 30 min, `schedule` no `deploy.yml`). Nunca use a chave `service_role` ali.
+- **E2E de mídia:** o build de teste lê `BANCO_FIXTURE` (arquivo JSON gerado por `scripts/build-e2e.mjs`) em vez da rede; os testes simulam o Storage e o REST com `page.route`.
+- **Importador:** `pnpm importar:portfolio` pede a senha do admin no terminal. Use `--simular` para testar sem rede. Reaproveita o `sharp` do Astro (sem dependência nova).
 - **Hooks:** o hook bloqueia editar `.env*` (exceto `.env.example`), lockfiles e `.git/`. O `rm -rf` é negado pelas permissões.
 - **`corbina/`:** é um worktree git de outra branch, alheio a este projeto. Não mexa; está no `.gitignore`.
 - **Supabase gratuito** pausa após 1 semana sem uso e não tem backup. Produção exige plano Pro.

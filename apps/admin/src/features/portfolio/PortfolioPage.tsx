@@ -69,6 +69,7 @@ export function PortfolioPage() {
 
       <p className="text-texto-suave mt-3 text-sm">
         As mudanças aparecem no site público na próxima publicação automática (em até 30 minutos).
+        Os itens destacados (★) vêm primeiro; os demais seguem a ordem desta lista.
       </p>
 
       {erro && (
