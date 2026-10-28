@@ -73,7 +73,7 @@ Spec: #1, #2, #4, #14 (site), direção visual.
 _Utilizável:_ o cliente publica projetos e depoimentos sozinho, sem mexer em código.
 Spec: #12, #13 (depoimentos).
 
-**Estado: código pronto e testado localmente; NADA enviado ao GitHub nem aplicado no Supabase real.**
+**Estado: código no GitHub, CI verde (pgTAP 38 de 38) e migration APLICADA no Supabase real em 2026-10-28 (verificada por consultas). Falta rodar o importador e testar os envios pelo painel.**
 
 - [x] Migration `20261027200000_portfolio_depoimentos.sql`: tabelas `portfolio_items` e `testimonials`, buckets `portfolio` (25 MB, webp e mp4) e `depoimentos` (5 MB, webp) com leitura pública e escrita só do admin, RLS e políticas de Storage só dos buckets da DK. Testes pgTAP escritos (23 casos), **ainda não executados** (rodam no CI, que exige o push)
 - [x] `@dk/media`: larguras (480/960/1920 sem ampliar), hash do conteúdo no nome do arquivo (cache de 1 ano seguro), URLs públicas, validação (imagem até 15 MB; vídeo MP4 até 25 MB), tarja, conversão das linhas do banco; pipeline do navegador (WebP, blur, capa do vídeo)
@@ -83,8 +83,10 @@ Spec: #12, #13 (depoimentos).
 - [x] Publicação automática a cada 30 minutos (`schedule` no `deploy.yml`) para o que o admin muda chegar ao site, sem tokens nem segredos
 - [x] Script `pnpm importar:portfolio` (importa os 14 itens atuais para o banco e o Storage; pede e-mail e senha no terminal; `--simular` testado: 14 itens, 33 arquivos WebP, 3,0 MB). **Ainda não executado de verdade**
 - [x] e2e: 36 execuções do painel de mídia + testes do site no modo "lido do banco" (192 no total)
-- [ ] **Autorização para aplicar a migration no Supabase real** (SQL Editor) e rodar o importador
-- [ ] Fazer o push para o CI rodar os testes pgTAP (a migration nunca foi executada em um Postgres)
+- [x] Migration aplicada no Supabase real pelo SQL Editor, em uma transação. Verificado: 2 tabelas novas com RLS, 4 políticas, buckets `portfolio` e `depoimentos` (públicos, com limites), 4 políticas `dk_midia_*` em `storage.objects`, visitante só com `SELECT`, e o outro app intacto (9 linhas em `chunks`, bucket e políticas `sources`)
+- [x] Testes pgTAP executados no CI com Postgres de verdade: 38 de 38 (15 da E1 + 23 da E4)
+- [ ] **Rodar o importador** (você, no seu terminal, porque pede a senha): `node --env-file=.env scripts/importar-portfolio.mjs`
+- [ ] Testar de verdade, pelo painel, o envio de uma foto, de um vídeo e de um depoimento com tarja, e ver o resultado no site depois da próxima publicação
 - [ ] Limitação conhecida: o Safari/iPhone não gera WebP no navegador; o painel avisa e pede Chrome, Edge ou Firefox (ou o computador) para enviar fotos
 - [ ] Trocar a mídia de um item existente (hoje só é possível excluir e criar de novo)
 
