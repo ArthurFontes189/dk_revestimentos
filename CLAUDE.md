@@ -73,7 +73,7 @@ legado/          v1 (somente leitura, fora do git da v2)
 
 - **Dinheiro:** calcule em centavos inteiros (`paraCentavos`/`deCentavos` em `@dk/core`), nunca some `number` decimal direto.
 - **Caixa:** `tipo` é `'entrada' | 'saida'`; "total pago" soma só entradas (a v1 somava saídas também).
-- **WhatsApp:** use `montarLinkWhatsApp` (normaliza o DDI 55 e lança erro se o número faltar). O número real e o domínio ainda são fictícios, vêm de variáveis de ambiente.
+- **WhatsApp:** use `montarLinkWhatsApp` (normaliza o DDI 55 e lança erro se o número faltar). O número real do cliente já está na variável `PUBLIC_WHATSAPP_NUMBER` do GitHub (deploy), no formato de 8 dígitos após o DDD informado pelo cliente (confirmado); o `.env` local e os testes seguem fictícios. O domínio ainda é fictício. Tudo vem de variáveis de ambiente.
 - **TypeScript:** mantenha `typescript@6`. A versão 7 quebra o `typescript-eslint` (o lint não roda).
 - **GitHub Pages:** sem rewrites, então o painel usa rota por hash. `BASE_PATH` termina com `/` (`/` com domínio próprio, `/nome-do-repo/` sem).
 - **Windows:** o atalho global `pnpm.cmd` desta máquina está quebrado no `cmd`/PowerShell. Rode `pnpm` pelo Git Bash. No Git Bash, um valor como `BASE_PATH=/x/` é convertido em caminho do Windows; defina-o via script Node ou PowerShell.

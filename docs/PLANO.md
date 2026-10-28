@@ -66,7 +66,7 @@ Spec: #1, #2, #4, #14 (site), direção visual.
 - [ ] Reduzir o LCP da home no celular (2,8 s) e das páginas de anúncio (2,6 s) para abaixo de 2,5 s; confirmar com dados reais (PageSpeed/Search Console) depois de publicado em produção
 - [ ] Meta Conversions API (envio do `Lead` pelo servidor): fica na E9
 
-**Precisa de você:** WhatsApp real e domínio (podem vir depois), aprovação dos textos, ID do pixel quando houver conta de anúncios.
+**Precisa de você:** domínio (pode vir depois; o WhatsApp real já está na variável do GitHub desde 2026-10-28 e vai ao ar no próximo deploy), aprovação dos textos, ID do pixel quando houver conta de anúncios.
 
 ### E4 — Portfólio e depoimentos pelo painel
 
