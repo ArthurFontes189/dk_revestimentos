@@ -85,6 +85,7 @@ Spec: #12, #13 (depoimentos).
 - [x] e2e: 36 execuções do painel de mídia + testes do site no modo "lido do banco" (192 no total)
 - [x] Migration aplicada no Supabase real pelo SQL Editor, em uma transação. Verificado: 2 tabelas novas com RLS, 4 políticas, buckets `portfolio` e `depoimentos` (públicos, com limites), 4 políticas `dk_midia_*` em `storage.objects`, visitante só com `SELECT`, e o outro app intacto (9 linhas em `chunks`, bucket e políticas `sources`)
 - [x] Testes pgTAP executados no CI com Postgres de verdade: 38 de 38 (15 da E1 + 23 da E4)
+- [x] Publicação manual (workflow_dispatch) feita em 2026-10-28 e **site no ar lendo do banco**: 14 itens, 14 imagens do Storage carregadas (0 quebradas), todas com srcset, dimensões e blur, 5 vídeos respondendo 200. A seção de depoimentos continua oculta (ainda não há nenhum)
 - [x] **Importador executado pelo dono** em 2026-10-28 e verificado por consultas: 14 itens (5 vídeos, todos publicados), 33 arquivos WebP + 5 MP4 (9,8 MB) no Storage, 0 variantes ou vídeos faltando, cache de 1 ano gravado. Como visitante anônimo: lê os 14 itens, a escrita é negada (401), foto e vídeo públicos respondem 200 e a listagem do bucket volta vazia
 - [ ] Testar de verdade, pelo painel, o envio de uma foto, de um vídeo e de um depoimento com tarja, e ver o resultado no site depois da próxima publicação
 - [ ] Limitação conhecida: o Safari/iPhone não gera WebP no navegador; o painel avisa e pede Chrome, Edge ou Firefox (ou o computador) para enviar fotos
