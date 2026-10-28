@@ -6,12 +6,17 @@ import { useSessao } from '../features/auth/SessaoProvider';
 const ITENS_MENU = [
   { para: '/', rotulo: 'Início' },
   { para: '/leads', rotulo: 'Leads' },
+  { para: '/clientes', rotulo: 'Clientes' },
   { para: '/portfolio', rotulo: 'Portfólio' },
   { para: '/depoimentos', rotulo: 'Depoimentos' },
 ] as const;
 
 const classeLinkBase =
   'focus-visible:outline-ouro-500 flex min-h-11 items-center rounded-lg px-3 transition-colors focus-visible:outline-2';
+
+// Barra inferior do celular: cinco itens precisam caber em 360 px, então padding e fonte menores.
+const classeLinkInferior =
+  'focus-visible:outline-ouro-500 text-ebano-100 flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-lg px-1 text-[11px] transition-colors focus-visible:outline-2';
 
 function Marca() {
   return (
@@ -68,13 +73,13 @@ export function Shell({ children }: { children: ReactNode }) {
       {/* Celular: navegação inferior */}
       <nav
         aria-label="Principal"
-        className="bg-ebano-950 text-creme fixed inset-x-0 bottom-0 flex justify-around px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden"
+        className="bg-ebano-950 text-creme fixed inset-x-0 bottom-0 flex justify-around px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden"
       >
         {ITENS_MENU.map((item) => (
           <Link
             key={item.para}
             to={item.para}
-            className={`${classeLinkBase} text-ebano-100 flex-1 justify-center`}
+            className={classeLinkInferior}
             activeProps={{ className: 'text-ouro-500' }}
           >
             {item.rotulo}

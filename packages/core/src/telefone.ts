@@ -1,3 +1,9 @@
+/** Só dígitos, sem o DDI 55 (DDD + número, 10 ou 11 dígitos). A mesma regra roda no banco. */
+export function normalizarTelefone(telefone: string): string {
+  const digitos = telefone.replace(/\D/g, '');
+  return digitos.length >= 12 && digitos.startsWith('55') ? digitos.slice(2) : digitos;
+}
+
 /** Formata para exibição: (61) 99999-1234. Devolve o original se o tamanho não for reconhecido. */
 export function formatarTelefoneBR(telefone: string): string {
   let digitos = telefone.replace(/\D/g, '');

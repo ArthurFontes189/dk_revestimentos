@@ -1,4 +1,6 @@
 export * from './caixa';
+export * from './cliente';
+export * from './cpf';
 export * from './dinheiro';
 export * from './enums';
 export * from './lead';

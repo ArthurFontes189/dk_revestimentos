@@ -21,6 +21,21 @@ export async function atualizarStatusLead(id: number, status: StatusLead): Promi
   if (error) throw error;
 }
 
+export interface ResultadoConversao {
+  cliente_id: number;
+  codigo: string;
+  cliente_novo: boolean;
+}
+
+/** Cria (ou localiza pelo telefone) o cliente e fecha o lead, tudo numa transação no banco. */
+export async function converterLead(id: number): Promise<ResultadoConversao> {
+  const { data, error } = await cliente().rpc('converter_lead', { p_lead_id: id });
+  if (error) throw error;
+  const [resultado] = data as ResultadoConversao[];
+  if (!resultado) throw new Error('A conversão não devolveu o cliente.');
+  return resultado;
+}
+
 export async function excluirLead(id: number): Promise<void> {
   const { error } = await cliente().from('leads').delete().eq('id', id);
   if (error) throw error;

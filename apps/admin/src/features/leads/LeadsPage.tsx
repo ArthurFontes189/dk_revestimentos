@@ -8,8 +8,9 @@ import {
   type StatusLead,
 } from '@dk/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
-import { atualizarStatusLead, excluirLead, listarLeads } from './api';
+import { atualizarStatusLead, converterLead, excluirLead, listarLeads } from './api';
 import type { Lead } from './tipos';
 
 const FILTROS: readonly FiltroStatus[] = ['Todos', ...STATUS_LEAD];
@@ -28,6 +29,12 @@ function linkDoLead(lead: Lead): string | null {
   } catch {
     return null;
   }
+}
+
+function mensagemDaConversao(erro: unknown): string {
+  return erro instanceof Error || (typeof erro === 'object' && erro !== null && 'message' in erro)
+    ? String((erro as { message: unknown }).message)
+    : 'tente de novo.';
 }
 
 function Informacao({ rotulo, valor }: { rotulo: string; valor: string | null }) {
@@ -91,9 +98,18 @@ function DetalheLead({ lead, aoVoltar }: { lead: Lead; aoVoltar: () => void }) {
       return clienteQuery.invalidateQueries({ queryKey: ['leads'] });
     },
   });
+  const converter = useMutation({
+    mutationFn: () => converterLead(lead.id),
+    onSuccess: () =>
+      Promise.all([
+        clienteQuery.invalidateQueries({ queryKey: ['leads'] }),
+        clienteQuery.invalidateQueries({ queryKey: ['clientes'] }),
+      ]),
+  });
 
   const whatsapp = linkDoLead(lead);
   const erro = mudarStatus.error ?? excluir.error;
+  const conversao = converter.data;
 
   return (
     <article className="border-ebano-200 rounded-lg border bg-white p-4 md:p-6">
@@ -144,7 +160,33 @@ function DetalheLead({ lead, aoVoltar }: { lead: Lead; aoVoltar: () => void }) {
         </p>
       )}
 
+      {conversao && (
+        <p role="status" className="bg-ouro-100 text-ebano-950 mt-4 rounded-lg p-3 text-sm">
+          {conversao.cliente_novo
+            ? `Cliente ${conversao.codigo} cadastrado e lead fechado.`
+            : `Este telefone já era do cliente ${conversao.codigo}. Lead fechado.`}{' '}
+          <Link to="/clientes" className="font-medium underline">
+            Ver clientes
+          </Link>
+        </p>
+      )}
+      {converter.isError && (
+        <p role="alert" className="mt-4 text-sm text-red-700">
+          Não foi possível converter: {mensagemDaConversao(converter.error)}
+        </p>
+      )}
+
       <div className="mt-6 flex flex-wrap items-center gap-3">
+        {lead.status !== 'Fechado' && (
+          <button
+            type="button"
+            disabled={converter.isPending}
+            onClick={() => converter.mutate()}
+            className={classeBotaoSecundario}
+          >
+            {converter.isPending ? 'Convertendo…' : 'Converter em cliente'}
+          </button>
+        )}
         {whatsapp && (
           <a
             href={whatsapp}

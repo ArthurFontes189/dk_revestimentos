@@ -1,5 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { formatarTelefoneBR } from './telefone';
+import { formatarTelefoneBR, normalizarTelefone } from './telefone';
+
+describe('normalizarTelefone', () => {
+  it('deve tirar a pontuação quando o telefone vem formatado', () => {
+    expect(normalizarTelefone('(61) 99999-1234')).toBe('61999991234');
+  });
+
+  it('deve tirar o DDI 55 quando o número tem 12 ou 13 dígitos', () => {
+    expect(normalizarTelefone('5561999991234')).toBe('61999991234');
+    expect(normalizarTelefone('556133334444')).toBe('6133334444');
+  });
+
+  it('deve manter o 55 quando ele é o DDD (número nacional de 11 dígitos)', () => {
+    expect(normalizarTelefone('55999991234')).toBe('55999991234');
+  });
+});
 
 describe('formatarTelefoneBR', () => {
   it('deve formatar celular quando tem 11 dígitos', () => {

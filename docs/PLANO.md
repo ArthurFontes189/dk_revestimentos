@@ -96,10 +96,29 @@ Spec: #12, #13 (depoimentos).
 _Utilizável:_ transformar um lead fechado em cliente e obra numa única operação.
 Spec: #6 (conversão), #7.
 
-- [ ] Migration `clients` com código `CLI-XXXX` por sequência única
-- [ ] Função `converter_lead` (RPC atômica): localiza ou cria cliente por CPF/telefone, cria obra, lança entrada, fecha o lead
-- [ ] Painel de clientes (CPF no cadastro), total contratado e total pago corretos
-- [ ] Testes da função e de concorrência do código do cliente
+**Desenho proposto (aguarda aprovação).** A `converter_lead` completa precisa de `services` (E6) e `transactions` (E8), que ainda não existem. Para a E5 ficar utilizável sozinha, ela entrega a conversão em duas camadas:
+
+- **E5:** a função localiza ou cria o cliente e fecha o lead, numa única transação. Já guarda `lead_id` no cliente (origem do anúncio fica rastreável).
+- **E6/E8:** a mesma função é estendida (`create or replace`) para também criar a obra e lançar a entrada no caixa, sem mudar o que o painel chama.
+
+Peças da E5:
+
+1. Migration `clients`: `codigo` `CLI-NNNN` gerado por sequência no banco (UNIQUE, nunca reutilizado após exclusão), `nome`, `cpf` (opcional, UNIQUE quando preenchido, validado com dígitos), `telefone` (UNIQUE), `endereco`, `obs`, `lead_id` opcional, `created_at`/`updated_at`. RLS só para o admin, sem `GRANT` ao `anon`, `revoke` explícito (projeto compartilhado).
+2. RPC `converter_lead(lead_id)`: acha cliente por CPF ou telefone, senão cria; marca o lead como `Fechado`; rejeita lead inexistente, já fechado ou chamada de quem não é admin. Só `authenticated` executa.
+3. `@dk/core`: `clienteSchema` (Zod) e validação de CPF, com testes.
+4. Painel: página **Clientes** (lista, busca por nome/telefone/CPF, criar, editar, excluir com confirmação) e botão **Converter em cliente** no CRM de leads.
+5. Testes: Vitest (CPF e schema), pgTAP (RLS de `clients`, conversão, idempotência, código único e sem reuso, não-admin barrado) e Playwright nas 4 larguras.
+6. "Total contratado" e "total pago" dependem de obras e caixa: o painel só mostra esses totais a partir da E6/E8 (hoje seriam sempre zero).
+
+- [x] Migration `20261028120000_clientes.sql`: tabela `clients` com código `CLI-NNNN` por sequência (único, nunca reaproveitado), telefone único sem DDI, CPF opcional único, `lead_id` de origem, RLS só do admin e `revoke` explícito
+- [x] Função `converter_lead` (RPC atômica): trava o lead, localiza o cliente pelo telefone ou cria, fecha o lead; recusa não-admin, lead inexistente e lead já convertido (obra e entrada no caixa entram na E6/E8)
+- [x] `@dk/core`: `cpfValido`, `formatarCpf`, `normalizarTelefone`, `clienteSchema` e `buscarClientes`, com 22 testes novos (116 no total)
+- [x] Painel: página **Clientes** (lista, busca sem acento por nome/telefone/CPF/código, criar, editar, excluir, WhatsApp) e botão **Converter em cliente** no CRM, com aviso quando o telefone já era cliente
+- [x] Menu inferior do celular ajustado: com 5 itens, "Depoimentos" saía da tela a 360 px; agora cabe (teste permanente no `admin.spec.ts`)
+- [x] Testes: pgTAP `rls_clientes.test.sql` (20 asserções: anon e não-admin barrados, conversão, reaproveitamento por telefone com DDI, lead repetido, código não reutilizado, telefone/CPF duplicados) e 9 cenários e2e novos (229 execuções passando no total)
+- [ ] pgTAP da E5 ainda não executado: não há Docker nesta máquina, então roda no CI (job `banco`) no próximo push
+- [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; antes do `db push`, incluir a nova versão no `migration repair`)
+- [ ] Total contratado e total pago corretos (depende da E6/E8)
 
 ### E6 — Fichas de produção (obras)
 

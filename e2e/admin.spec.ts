@@ -126,3 +126,29 @@ test('deve enviar o novo status ao banco quando o admin troca o status', async (
 
   await expect.poll(() => atualizacao).toEqual({ status: 'Fechado' });
 });
+
+test('deve caber todos os itens do menu na tela quando é celular', async ({ page }, info) => {
+  const largura = info.project.use.viewport?.width ?? 0;
+  test.skip(!ehCelular(largura), 'a barra inferior só existe no celular');
+  await entrarComoAdmin(page);
+  await page.route(URL_LEADS, (rota) => responderJson(rota, LEADS));
+  await page.goto('/admin/#/leads');
+
+  const itens = await page
+    .getByRole('navigation', { name: 'Principal' })
+    .last()
+    .getByRole('link')
+    .evaluateAll((links) =>
+      links.map((link) => ({
+        texto: link.textContent,
+        cortado: link.scrollWidth > link.clientWidth,
+        direita: link.getBoundingClientRect().right,
+      })),
+    );
+
+  expect(itens.length).toBeGreaterThanOrEqual(5);
+  for (const item of itens) {
+    expect(item.cortado, `${item.texto} está cortado`).toBe(false);
+    expect(item.direita, `${item.texto} passa da borda da tela`).toBeLessThanOrEqual(largura);
+  }
+});
