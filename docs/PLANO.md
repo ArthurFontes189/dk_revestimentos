@@ -125,10 +125,28 @@ Peças da E5:
 _Utilizável:_ acompanhar cada obra do orçamento à entrega.
 Spec: #8.
 
-- [ ] Migration `services` com FKs, status em enum e datas tipadas
-- [ ] Painel de obras: criar, editar, status, quitação rápida, conclusão
-- [ ] Editar a entrada ajusta o caixa (trigger); excluir obra trata os lançamentos vinculados
-- [ ] DRE da obra usando `calcularDre` de `@dk/core`
+**Desenho proposto (aguarda aprovação).** O ponto delicado é o dinheiro recebido: na v1 o valor da entrada ficava na obra **e** no caixa, e os dois divergiam. Para ter uma única fonte da verdade:
+
+1. **O caixa é a fonte do "recebido".** A obra **não** guarda `valor_entrada`. O valor recebido é a soma das **entradas** de `transactions` ligadas à obra (view `obras_resumo`, `security_invoker`, com `valor_recebido` e `saldo`). Assim, apagar um lançamento no caixa reflete na obra sozinho, sem trigger de mão dupla e sem divergência.
+2. **A tabela `transactions` nasce na E6** (só o necessário: `tipo` entrada/saída, `categoria`, `descricao`, `valor numeric(12,2) > 0`, `data date`, `client_id`, `service_id`). A E8 fica só com o **painel do caixa** (lançamentos manuais, filtros, saldo) e as categorias de saída.
+3. **RPCs atômicas** (admin, `security invoker` + `is_admin()`):
+   - `definir_recebido(obra_id, valor)`: mantém um único lançamento "Entrada da obra" por obra (índice único parcial) e o ajusta; zero remove. É o "editar a entrada ajusta o caixa".
+   - `registrar_recebimento(obra_id, valor)`: acrescenta uma entrada (quitação rápida = saldo inteiro). Recusa passar do valor total.
+   - `converter_lead(lead_id, obra jsonb default null)`: estendida. Sem `obra`, continua igual à E5; com `obra`, também cria a ficha e o lançamento da entrada, tudo numa transação.
+4. **`services`:** `client_id` obrigatório (`on delete restrict`: cliente com obra não é excluído, o painel explica), `lead_id` opcional, `descricao`, `materiais`, `forma_pagamento`, `responsavel`, `data_entrega date`, `valor_total numeric(12,2) >= 0`, `status` em enum (`status_obra`) e `concluida_em` preenchida pelo banco ao virar Concluído.
+5. **Excluir obra** apaga também os lançamentos ligados (a v1 deixava lixo no caixa). O painel mostra antes quanto já foi recebido e pede confirmação.
+6. **DRE** da obra com `calcularDre` de `@dk/core`. Diárias e insumos só existem na E7, então até lá o DRE mostra custo zero, sem número inventado.
+7. **Painel:** página **Obras** (lista com filtro por status e saldo a receber; detalhe com ficha, DRE, recebimentos; criar, editar, mudar status, quitar saldo, excluir) e **Criar ficha de obra** a partir do lead e da página do cliente. A página **Clientes** passa a mostrar total contratado e total pago (fecha a pendência da E5).
+8. **Testes:** Vitest (validação da obra, saldo), pgTAP (RLS, `definir_recebido`, `registrar_recebimento`, excesso, conversão com obra, exclusão em cascata, cliente com obra protegido, `concluida_em`) e Playwright nas 4 larguras.
+
+- [ ] Migration `services` + `transactions` + view `obras_resumo` + RPCs, com RLS só do admin e `revoke` explícito
+- [ ] `converter_lead` estendida (cria cliente, obra e entrada numa transação)
+- [ ] `@dk/core`: `obraSchema` e validações, com testes
+- [ ] Painel de obras: criar, editar, status, quitação rápida, conclusão, excluir com aviso
+- [ ] Clientes: total contratado e total pago corretos
+- [ ] DRE da obra usando `calcularDre` (custos zerados até a E7)
+- [ ] Testes pgTAP e e2e
+- [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; incluir a versão no `migration repair`)
 
 ### E7 — Equipe, diárias e insumos
 
@@ -144,7 +162,7 @@ Spec: #9, #10.
 _Utilizável:_ saldo e movimentações do negócio.
 Spec: #11.
 
-- [ ] Migration `transactions` com categorias unificadas e `date`
+- [ ] Categorias de saída unificadas (a tabela `transactions` já nasce na E6)
 - [ ] Painel de caixa com filtro por período e categoria, saldo e totais via `resumirCaixa`
 - [ ] Excluir entrada de obra reflete no valor recebido da obra
 
