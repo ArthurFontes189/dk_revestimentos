@@ -117,7 +117,7 @@ Peças da E5:
 - [x] Menu inferior do celular ajustado: com 5 itens, "Depoimentos" saía da tela a 360 px; agora cabe (teste permanente no `admin.spec.ts`)
 - [x] Testes: pgTAP `rls_clientes.test.sql` (20 asserções: anon e não-admin barrados, conversão, reaproveitamento por telefone com DDI, lead repetido, código não reutilizado, telefone/CPF duplicados) e 9 cenários e2e novos (229 execuções passando no total)
 - [ ] pgTAP da E5 ainda não executado: não há Docker nesta máquina, então roda no CI (job `banco`) no próximo push
-- [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; antes do `db push`, incluir a nova versão no `migration repair`)
+- [x] Migration aplicada no Supabase real em 2026-10-28 (SQL Editor, numa transação) e verificada: `clients` com RLS e a política `clients_admin_all`, visitante sem `SELECT` nem `INSERT`, `converter_lead` executável só por `authenticated`, 10 colunas, sequência liberada ao admin. Outro app intacto (9 linhas em `chunks`, bucket `sources`). `CLAUDE.md` já lista a nova versão no `migration repair`
 - [ ] Total contratado e total pago corretos (depende da E6/E8)
 
 ### E6 — Fichas de produção (obras)
