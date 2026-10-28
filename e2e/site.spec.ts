@@ -1,11 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
-import { semRolagemHorizontal, SUPABASE } from './apoio';
+import { semRolagemHorizontal, servirImagensFalsas, SUPABASE } from './apoio';
 
 const URL_LEADS = `${SUPABASE}/rest/v1/leads*`;
 
 // A maioria dos cenários não trata de cookies: registra a escolha antes, para o banner não atrapalhar.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => window.localStorage.setItem('dk_consentimento', 'recusado'));
+  await servirImagensFalsas(page);
 });
 
 /** Abre a home e espera a ilha do formulário hidratar (ela só carrega ao aparecer na tela). */
@@ -205,4 +206,51 @@ test('deve fingir sucesso sem gravar quando a isca anti-spam é preenchida', asy
 
   await expect(page.getByRole('heading', { name: 'Recebemos o seu pedido!' })).toBeVisible();
   expect(chamadas).toBe(0);
+});
+
+test('deve montar as imagens do portfólio com srcset, dimensões e blur quando os itens vêm do banco', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const primeira = page.locator('#portfolio [data-item] img').first();
+
+  await expect(primeira).toHaveAttribute(
+    'srcset',
+    /\/storage\/v1\/object\/public\/portfolio\/itens\/.+-480\.webp 480w, .+-960\.webp 960w/,
+  );
+  await expect(primeira).toHaveAttribute('width', '1280');
+  await expect(primeira).toHaveAttribute('height', '960');
+  await expect(primeira).toHaveAttribute('loading', 'lazy');
+  await expect(primeira).toHaveAttribute('style', /background-image:url\(data:image\/webp/);
+});
+
+test('deve mostrar a seção de depoimentos com as imagens quando há depoimentos visíveis', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  const secao = page.locator('#depoimentos');
+  await expect(secao.getByRole('heading', { name: 'O que dizem nossos clientes' })).toBeVisible();
+  await expect(secao.locator('img')).toHaveCount(2);
+  await expect(secao.getByRole('button', { name: 'Ampliar: Depoimento de Maria' })).toBeVisible();
+  await expect(secao.getByRole('button', { name: 'Ampliar: Depoimento de cliente' })).toBeVisible();
+  await expect(secao.getByText('Deck na beira do lago')).toBeVisible();
+
+  // Imagens com texto alternativo e dimensões (sem salto de layout).
+  const primeiraImagem = secao.locator('img').first();
+  await expect(primeiraImagem).toHaveAttribute('alt', /Depoimento de Maria/);
+  await expect(primeiraImagem).toHaveAttribute('width', '960');
+  await expect(primeiraImagem).toHaveAttribute('height', '1700');
+  await semRolagemHorizontal(page);
+});
+
+test('deve ampliar o depoimento quando o visitante clica na imagem', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Ampliar: Depoimento de Maria' }).click();
+
+  const janela = page.getByRole('dialog', { name: 'Depoimento de Maria' });
+  await expect(janela).toBeVisible();
+  await expect(janela.getByRole('img')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(janela).toBeHidden();
 });

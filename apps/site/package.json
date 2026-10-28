@@ -13,6 +13,7 @@
     "@astrojs/check": "^0.9.12",
     "@astrojs/react": "^7.1.1",
     "@dk/core": "workspace:*",
+    "@dk/media": "workspace:*",
     "@dk/ui": "workspace:*",
     "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/plus-jakarta-sans": "^5.3.0",

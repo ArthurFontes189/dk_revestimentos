@@ -1,0 +1,50 @@
+---
+import { Image } from 'astro:assets';
+import type { ItemExibido } from '../lib/portfolio';
+
+interface Props {
+  item: ItemExibido;
+  sizes: string;
+  /** Larguras geradas no build para imagens da reserva embutida. */
+  larguras?: number[];
+  class?: string;
+  carregamento?: 'lazy' | 'eager';
+}
+
+const {
+  item,
+  sizes,
+  larguras = [360, 720, 1080],
+  class: classe,
+  carregamento = 'lazy',
+} = Astro.props;
+const imagem = item.imagem;
+// A descrição é o texto alternativo; se o admin deixou em branco, usa o título.
+const alt = item.descricao || item.titulo;
+---
+
+{imagem.origem === 'astro' ? (
+  <Image
+    src={imagem.metadata}
+    alt={alt}
+    widths={larguras}
+    sizes={sizes}
+    format="webp"
+    quality={75}
+    loading={carregamento}
+    class={classe}
+  />
+) : (
+  <img
+    src={imagem.src}
+    srcset={imagem.srcset}
+    sizes={sizes}
+    width={imagem.largura}
+    height={imagem.altura}
+    alt={alt}
+    loading={carregamento}
+    decoding="async"
+    class={classe}
+    style={imagem.blur ? `background-image:url(${imagem.blur});background-size:cover` : undefined}
+  />
+)}

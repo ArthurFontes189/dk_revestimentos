@@ -1,0 +1,119 @@
+[
+  {
+    "id": "deck-lago",
+    "titulo": "Deck curvo à beira do lago",
+    "descricao": "Deck com bancos e guarda-corpo em madeira, desenhado em curva acompanhando a margem do lago.",
+    "categoria": "ÁREAS EXTERNAS",
+    "tipo": "foto",
+    "imagem": "deck-lago"
+  },
+  {
+    "id": "mesa-borda-natural",
+    "titulo": "Mesa e banco de madeira maciça",
+    "descricao": "Mesa e banco com tampos inteiriços que preservam o contorno natural da madeira e pés vazados em círculo.",
+    "categoria": "MÓVEIS SOB MEDIDA",
+    "tipo": "foto",
+    "imagem": "mesa-borda-natural"
+  },
+  {
+    "id": "deck-piscina",
+    "titulo": "Deck ao lado da piscina",
+    "descricao": "Deck de madeira ao longo de uma fachada ripada, junto à piscina e ao jardim.",
+    "categoria": "ÁREAS EXTERNAS",
+    "tipo": "foto",
+    "imagem": "deck-piscina"
+  },
+  {
+    "id": "daybed-trancado",
+    "titulo": "Sofá com encosto trançado",
+    "descricao": "Sofá de madeira com laterais em ripas trançadas, gavetas sob o assento e almofadas.",
+    "categoria": "MÓVEIS SOB MEDIDA",
+    "tipo": "foto",
+    "imagem": "daybed-trancado"
+  },
+  {
+    "id": "deck-curvo-lago",
+    "titulo": "Deck na curva da margem",
+    "descricao": "Deck em ripas de madeira acompanhando a curva da margem do lago.",
+    "categoria": "ÁREAS EXTERNAS",
+    "tipo": "video",
+    "imagem": "capa-deck-curvo-lago",
+    "video": "deck-curvo-lago"
+  },
+  {
+    "id": "estante-escada",
+    "titulo": "Estante em escada",
+    "descricao": "Estante de madeira com quatro prateleiras e estrutura inclinada.",
+    "categoria": "MARCENARIA",
+    "tipo": "foto",
+    "imagem": "estante-escada"
+  },
+  {
+    "id": "portao-ripado",
+    "titulo": "Portão em madeira ripada",
+    "descricao": "Folhas de portão em ripas verticais de madeira, com moldura metálica.",
+    "categoria": "MADEIRA & REVESTIMENTOS",
+    "tipo": "video",
+    "imagem": "capa-portao-ripado",
+    "video": "portao-ripado"
+  },
+  {
+    "id": "bistro-mesa-alta",
+    "titulo": "Mesa alta com dois bancos",
+    "descricao": "Mesa alta e dois bancos com encosto, em madeira, ao lado de um painel ripado.",
+    "categoria": "MÓVEIS SOB MEDIDA",
+    "tipo": "foto",
+    "imagem": "bistro-mesa-alta"
+  },
+  {
+    "id": "deck-laje-escada",
+    "titulo": "Deck sobre laje com degraus",
+    "descricao": "Deck de madeira com degraus e mureta revestida, executado sobre laje.",
+    "categoria": "ÁREAS EXTERNAS",
+    "tipo": "video",
+    "imagem": "capa-deck-laje-escada",
+    "video": "deck-laje-escada"
+  },
+  {
+    "id": "oratorio-ripado",
+    "titulo": "Oratório de parede",
+    "descricao": "Nicho de madeira com porta de vidro e laterais em ripas, fixado em painel de madeira.",
+    "categoria": "MARCENARIA",
+    "tipo": "foto",
+    "imagem": "oratorio-ripado"
+  },
+  {
+    "id": "mesas-e-bancos",
+    "titulo": "Mesas e bancos de madeira",
+    "descricao": "Mesa longa com dois bancos de madeira maciça e uma mesa redonda, vistas de cima.",
+    "categoria": "MÓVEIS SOB MEDIDA",
+    "tipo": "foto",
+    "imagem": "mesas-e-bancos"
+  },
+  {
+    "id": "poltrona-trancada",
+    "titulo": "Poltrona com encosto trançado",
+    "descricao": "Poltrona de madeira com laterais em ripas trançadas, fotografada durante o acabamento.",
+    "categoria": "MARCENARIA",
+    "tipo": "foto",
+    "imagem": "poltrona-trancada"
+  },
+  {
+    "id": "escrivaninha",
+    "titulo": "Escrivaninha com gavetas",
+    "descricao": "Escrivaninha de madeira com nichos, gavetas e pés inclinados.",
+    "categoria": "MÓVEIS SOB MEDIDA",
+    "tipo": "video",
+    "imagem": "capa-escrivaninha",
+    "video": "escrivaninha"
+  },
+  {
+    "id": "deck-agua",
+    "titulo": "Deck junto à água",
+    "descricao": "Deck de madeira com acabamento brilhante e recorte curvo à beira da água.",
+    "categoria": "ÁREAS EXTERNAS",
+    "tipo": "video",
+    "imagem": "capa-deck-agua",
+    "video": "deck-agua"
+  }
+]

@@ -1,12 +1,12 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { Image } from 'astro:assets';
 import FormularioOrcamento from '../components/FormularioOrcamento';
+import ImagemDoPortfolio from '../components/ImagemDoPortfolio.astro';
 import Rodape from '../components/Rodape.astro';
 import { LANDINGS } from '../data/landings';
-import { PORTFOLIO } from '../data/portfolio';
 import Base from '../layouts/Base.astro';
 import { linkWhatsApp, NUMERO_WHATSAPP } from '../lib/contato';
+import { carregarPortfolio } from '../lib/portfolio';
 import { url } from '../lib/urls';
 
 export const getStaticPaths = (() =>
@@ -17,7 +17,9 @@ export const getStaticPaths = (() =>
 
 const { landing } = Astro.props;
 // Só trabalhos reais da categoria; vídeos usam a capa (esta página é leve, sem players).
-const trabalhos = PORTFOLIO.filter((item) => item.categoria === landing.categoria).slice(0, 6);
+const trabalhos = (await carregarPortfolio())
+  .filter((item) => item.categoria === landing.categoria)
+  .slice(0, 6);
 const whatsapp = linkWhatsApp(`Olá! Gostaria de um orçamento de ${landing.titulo.toLowerCase()}.`);
 ---
 
@@ -76,14 +78,10 @@ const whatsapp = linkWhatsApp(`Olá! Gostaria de um orçamento de ${landing.titu
         <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {trabalhos.map((item) => (
             <li class="overflow-hidden rounded-xl bg-white">
-              <Image
-                src={item.imagem}
-                alt={item.descricao}
-                widths={[360, 720]}
+              <ImagemDoPortfolio
+                item={item}
+                larguras={[360, 720]}
                 sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                format="webp"
-                quality={75}
-                loading="lazy"
                 class="aspect-[4/3] w-full object-cover"
               />
               <p class="p-3 text-sm">{item.titulo}</p>

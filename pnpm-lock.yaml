@@ -263,6 +263,9 @@ importers:
       '@dk/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@dk/media':
+        specifier: workspace:*
+        version: link:../../packages/media
       '@dk/ui':
         specifier: workspace:*
         version: link:../../packages/ui

@@ -1,0 +1,57 @@
+---
+import { carregarDepoimentos } from '../lib/depoimentos';
+
+// Prints de conversas enviados pelo admin. Sem nenhum depoimento visível, a seção inteira some.
+const depoimentos = await carregarDepoimentos();
+---
+
+{depoimentos.length > 0 && (
+  <section id="depoimentos" class="bg-carvalho-50 scroll-mt-16 px-4 py-20">
+    <div class="mx-auto max-w-6xl">
+      <p class="text-carvalho-700 text-sm tracking-[0.2em] uppercase">Depoimentos</p>
+      <h2 class="mt-3 max-w-2xl text-3xl sm:text-4xl">O que dizem nossos clientes</h2>
+
+      <ul class="mt-10 columns-2 gap-4 md:columns-3 lg:columns-4">
+        {depoimentos.map((d) => {
+          const titulo = d.nome ? `Depoimento de ${d.nome}` : 'Depoimento de cliente';
+          return (
+            <li class="mb-4 break-inside-avoid">
+              <button
+                type="button"
+                data-abrir
+                data-tipo="foto"
+                data-grande={d.grande}
+                data-titulo={titulo}
+                data-descricao={d.legenda ?? 'Mensagem de um cliente'}
+                aria-label={`Ampliar: ${titulo}`}
+                class="border-ebano-200 focus-visible:outline-carvalho-600 block w-full overflow-hidden rounded-xl border bg-white focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                <img
+                  src={d.src}
+                  srcset={d.srcset}
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                  width={d.largura}
+                  height={d.altura}
+                  alt={`${titulo}${d.legenda ? `. ${d.legenda}` : ''}`}
+                  loading="lazy"
+                  decoding="async"
+                  class="h-auto w-full"
+                  style={
+                    d.blur ? `background-image:url(${d.blur});background-size:cover` : undefined
+                  }
+                />
+              </button>
+              {(d.nome || d.legenda) && (
+                <p class="text-texto-suave mt-2 text-sm">
+                  {d.nome && <strong class="text-ebano-950">{d.nome}</strong>}
+                  {d.nome && d.legenda && ' · '}
+                  {d.legenda}
+                </p>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+)}

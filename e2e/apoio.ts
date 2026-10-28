@@ -35,6 +35,21 @@ export async function gerarPng(
   return Buffer.from(base64, 'base64');
 }
 
+const PNG_1X1 = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64',
+);
+
+/**
+ * O build de teste aponta as mídias para o Supabase falso. Aqui elas "existem": toda imagem pública
+ * do Storage responde com um PNG de 1 pixel (para o navegador tratar como imagem carregada).
+ */
+export async function servirImagensFalsas(page: Page) {
+  await page.route(`${SUPABASE}/storage/v1/object/public/**`, (rota) =>
+    rota.fulfill({ status: 200, contentType: 'image/png', body: PNG_1X1 }),
+  );
+}
+
 /** O Storage recebe multipart: extrai os bytes do WebP (cabeçalho RIFF traz o tamanho do arquivo). */
 export function extrairWebp(corpo: Buffer): Buffer {
   const inicio = corpo.indexOf('RIFF');

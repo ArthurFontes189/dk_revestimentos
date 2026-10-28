@@ -1,17 +1,24 @@
 ---
-import { getImage, Image } from 'astro:assets';
-import { categoriasComItens, idDaCategoria, PORTFOLIO } from '../data/portfolio';
+import { getImage } from 'astro:assets';
+import { categoriasComItens, idDaCategoria } from '../data/portfolio';
+import { carregarPortfolio } from '../lib/portfolio';
+import ImagemDoPortfolio from './ImagemDoPortfolio.astro';
 
-const categorias = categoriasComItens();
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+// Itens do banco (ou da reserva embutida, se o banco falhar na publicação).
+const todos = await carregarPortfolio();
+const categorias = categoriasComItens(todos);
 
-// Versão grande (só para a ampliação), gerada em build; as miniaturas usam <Image> abaixo.
+// Versão grande (só para a ampliação): a reserva gera em build; os itens do banco já têm a maior variante.
 const itens = await Promise.all(
-  PORTFOLIO.map(async (item) => ({
+  todos.map(async (item) => ({
     ...item,
     categoriaId: idDaCategoria(item.categoria),
-    grande: (await getImage({ src: item.imagem, width: 1600, format: 'webp', quality: 80 })).src,
-    urlVideo: item.video ? `${base}/${item.video}` : '',
+    grande:
+      item.imagem.origem === 'banco'
+        ? item.imagem.grande
+        : (await getImage({ src: item.imagem.metadata, width: 1600, format: 'webp', quality: 80 }))
+            .src,
+    urlVideo: item.video ?? '',
   })),
 );
 
@@ -49,14 +56,9 @@ const classeFiltro =
             aria-label={`${item.tipo === 'video' ? 'Assistir ao vídeo' : 'Ampliar a foto'}: ${item.titulo}`}
             class="group focus-visible:outline-ouro-500 relative block w-full overflow-hidden rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2"
           >
-            <Image
-              src={item.imagem}
-              alt={item.descricao}
-              widths={[360, 720, 1080]}
+            <ImagemDoPortfolio
+              item={item}
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-              format="webp"
-              quality={75}
-              loading="lazy"
               class="h-auto w-full transition-transform duration-500 group-hover:scale-105"
             />
             {item.tipo === 'video' && (

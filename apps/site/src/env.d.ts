@@ -5,6 +5,8 @@ interface ImportMetaEnv {
   readonly PUBLIC_META_PIXEL_ID?: string;
   /** "true" liga a indexação pelo Google (produção). Qualquer outro valor mantém noindex. */
   readonly PUBLIC_INDEXAR?: string;
+  /** "true" ignora o banco e usa só o portfólio embutido (útil para testar). */
+  readonly PUBLIC_PORTFOLIO_ESTATICO?: string;
   readonly PUBLIC_SUPABASE_URL?: string;
   readonly PUBLIC_SUPABASE_PUBLISHABLE_KEY?: string;
 }
