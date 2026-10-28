@@ -87,6 +87,12 @@ function perguntar(pergunta, oculto = false) {
 }
 
 async function conectar() {
+  // Sem terminal interativo (ex.: dentro do Claude Code) não dá para digitar a senha.
+  if (!process.stdin.isTTY) {
+    throw new Error(
+      'Este script pede a senha do admin e precisa de um terminal interativo. Abra o seu terminal (Git Bash, PowerShell ou CMD) na pasta do projeto e rode o comando lá.',
+    );
+  }
   const url = process.env.VITE_SUPABASE_URL;
   const chave = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !chave) {
