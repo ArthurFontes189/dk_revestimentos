@@ -13,6 +13,64 @@ export async function semRolagemHorizontal(page: Page) {
   expect(excesso, 'a página não deve rolar na horizontal').toBeLessThanOrEqual(0);
 }
 
+/** Gera um PNG de cor única no próprio navegador (não precisa de arquivos de teste no repositório). */
+export async function gerarPng(
+  page: Page,
+  largura: number,
+  altura: number,
+  cor = '#c28340',
+): Promise<Buffer> {
+  const base64 = await page.evaluate(
+    ([l, a, c]) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = l as number;
+      canvas.height = a as number;
+      const ctx = canvas.getContext('2d')!;
+      ctx.fillStyle = c as string;
+      ctx.fillRect(0, 0, l as number, a as number);
+      return canvas.toDataURL('image/png').split(',')[1]!;
+    },
+    [largura, altura, cor] as const,
+  );
+  return Buffer.from(base64, 'base64');
+}
+
+/** O Storage recebe multipart: extrai os bytes do WebP (cabeçalho RIFF traz o tamanho do arquivo). */
+export function extrairWebp(corpo: Buffer): Buffer {
+  const inicio = corpo.indexOf('RIFF');
+  if (inicio === -1) throw new Error('Nenhum WebP encontrado no corpo do envio');
+  const tamanho = corpo.readUInt32LE(inicio + 4);
+  return corpo.subarray(inicio, inicio + 8 + tamanho);
+}
+
+/** Lê a cor de um pixel (frações da imagem) de um WebP, decodificando no navegador. */
+export async function corDoPixel(
+  page: Page,
+  webp: Buffer,
+  fx: number,
+  fy: number,
+): Promise<[number, number, number]> {
+  return page.evaluate(
+    async ([base64, x, y]) => {
+      const bytes = Uint8Array.from(atob(base64 as string), (c) => c.charCodeAt(0));
+      const bitmap = await createImageBitmap(new Blob([bytes], { type: 'image/webp' }));
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(bitmap, 0, 0);
+      const [r, g, b] = ctx.getImageData(
+        Math.floor((x as number) * bitmap.width),
+        Math.floor((y as number) * bitmap.height),
+        1,
+        1,
+      ).data;
+      return [r!, g!, b!] as [number, number, number];
+    },
+    [webp.toString('base64'), fx, fy] as const,
+  );
+}
+
 function codificar(objeto: object): string {
   return Buffer.from(JSON.stringify(objeto)).toString('base64url');
 }

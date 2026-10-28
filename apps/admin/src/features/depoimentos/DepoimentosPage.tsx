@@ -222,7 +222,7 @@ export function DepoimentosPage() {
 
       <Dialogo
         aberto={atual !== undefined}
-        titulo={`Depoimento ${Math.min(adicionados + 1, totalDaFila)} de ${totalDaFila}`}
+        titulo={`Depoimento ${totalDaFila - fila.length + 1} de ${totalDaFila}`}
         aoFechar={() => {
           if (!enviando) setFila([]);
         }}
