@@ -225,11 +225,11 @@ Spec: #11.
 - Aceita que lançamento manual de **entrada** use só a categoria `Outras entradas`, com o dinheiro de cliente entrando sempre pela obra?
 - O **mês atual** como período padrão está bom?
 
-- [x] Migration `20261031120000_caixa.sql` (ainda não executada em nenhum Postgres; o CI roda no push): `check` de categoria em `transactions`, trigger de proteção dos vinculados e `before delete` de diária, insumo e obra ligando a variável interna
+- [x] Migration `20261031120000_caixa.sql` (pgTAP passou no CI em 2026-10-31; ainda não aplicada no Supabase real): `check` de categoria em `transactions`, trigger de proteção dos vinculados e `before delete` de diária, insumo e obra ligando a variável interna
 - [x] `@dk/core`: categorias de entrada e saída, `lancamentoSchema`, `periodoDoAtalho` e `filtrarLancamentos`, com testes
 - [x] Painel **Caixa**: filtros, totais via `resumirCaixa`, lista com selo de automático, lançamento manual e exclusão de entrada de obra
 - [x] Obras e clientes recarregam quando o caixa muda
-- [x] Testes: Vitest (16 novos), pgTAP `caixa.test.sql` (16 asserções, aguardando o CI) e 10 cenários e2e novos (350 execuções passando)
+- [x] Testes: Vitest (16 novos), pgTAP `caixa.test.sql` (16 asserções, passou no CI) e 10 cenários e2e novos (350 execuções passando)
 - [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; incluir a versão no `migration repair`)
 
 ### E9 — PWA, qualidade e produção
