@@ -7,6 +7,7 @@ export * from './lead';
 export * from './leads';
 export * from './mensagem';
 export * from './obra';
+export * from './obraSchema';
 export * from './ordenacao';
 export * from './origem';
 export * from './portfolio';

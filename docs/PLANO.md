@@ -139,13 +139,14 @@ Spec: #8.
 7. **Painel:** página **Obras** (lista com filtro por status e saldo a receber; detalhe com ficha, DRE, recebimentos; criar, editar, mudar status, quitar saldo, excluir) e **Criar ficha de obra** a partir do lead e da página do cliente. A página **Clientes** passa a mostrar total contratado e total pago (fecha a pendência da E5).
 8. **Testes:** Vitest (validação da obra, saldo), pgTAP (RLS, `definir_recebido`, `registrar_recebimento`, excesso, conversão com obra, exclusão em cascata, cliente com obra protegido, `concluida_em`) e Playwright nas 4 larguras.
 
-- [ ] Migration `services` + `transactions` + view `obras_resumo` + RPCs, com RLS só do admin e `revoke` explícito
-- [ ] `converter_lead` estendida (cria cliente, obra e entrada numa transação)
-- [ ] `@dk/core`: `obraSchema` e validações, com testes
-- [ ] Painel de obras: criar, editar, status, quitação rápida, conclusão, excluir com aviso
-- [ ] Clientes: total contratado e total pago corretos
-- [ ] DRE da obra usando `calcularDre` (custos zerados até a E7)
-- [ ] Testes pgTAP e e2e
+- [x] Migration `20261029120000_obras_caixa.sql`: `services` + `transactions` + view `obras_resumo` + RPCs `definir_recebido` e `registrar_recebimento`, com RLS só do admin e `revoke` explícito (escrita, ainda não executada: sem Docker, o pgTAP roda no CI)
+- [x] `converter_lead(lead_id, obra jsonb)` estendida (cria cliente, obra e entrada numa transação; a chamada antiga só com `lead_id` segue valendo)
+- [x] `@dk/core`: `obraSchema`, `novaObraSchema`, `lerValorBRL` e `totaisDoCliente`, com testes
+- [x] Painel de obras: lista com filtro por status, criar (com entrada inicial), editar, mudar status, quitar saldo e excluir com aviso do que sai do caixa. Menu do celular reduzido para caber 6 itens a 360 px
+- [x] Clientes: total contratado e total pago (obras somadas e só entradas do caixa)
+- [x] DRE da obra usando `calcularDre` (custos zerados até a E7)
+- [x] Testes: pgTAP `rls_obras_caixa.test.sql` (18 asserções, ainda não executado: roda no CI) e 7 cenários e2e novos em `obras.spec.ts` (257 execuções passando)
+- [ ] Pendente na E6: botão "Criar ficha de obra" ao converter o lead e na página do cliente (a RPC já aceita a obra)
 - [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; incluir a versão no `migration repair`)
 
 ### E7 — Equipe, diárias e insumos
