@@ -237,11 +237,45 @@ Spec: #11.
 _Utilizável:_ pronto para o cliente usar e divulgar.
 Spec: #14, requisitos não funcionais.
 
-- [ ] PWA: service worker, ícones 192/512 e maskable; instalação em Android e iOS
-- [ ] Estender o Playwright aos novos fluxos (clientes, obras, caixa…); modais com foco preso e `role="dialog"`
-- [ ] Meta Conversions API (Edge Function) — se não couber antes, entra aqui
-- [ ] Migração do deploy para Cloudflare Pages antes de anúncios pagos; domínio próprio
-- [ ] Supabase Pro (backup e sem pausa) e checklist de entrega: trocar senha do admin, WhatsApp e pixel reais
+**Desenho proposto (aguarda aprovação).** A E9 não cria telas novas: instala, protege e publica o que as E1 a E8 já entregam. Está dividida em quatro blocos independentes, na ordem em que devem ser feitos (o que depende de decisão ou de conta do cliente fica por último).
+
+1. **PWA (instalável, com cache offline básico).**
+   - **Painel:** `vite-plugin-pwa` (já previsto no ADR 0001), `manifest` com `start_url` em `/admin/#/`, `scope` `/admin/`, nome "DK Painel", ícones 192, 512 e maskable gerados a partir do logo com o `sharp` que já está no projeto (sem dependência nova). O service worker guarda só o **shell** (HTML, JS, CSS, fontes). Chamadas ao Supabase **nunca** passam pelo cache (`NetworkOnly`), para o painel não mostrar caixa ou lead velho como se fosse atual. Sem conexão, o painel mostra um aviso claro em vez de dados antigos.
+   - **Site público:** service worker leve e separado (escopo `/`), com cache do shell e das imagens do portfólio já vistas (`StaleWhileRevalidate`, com limite de entradas). O `manifest` do site tem outro `scope`, para os dois não competirem pela instalação.
+   - **Atualização:** o painel avisa "Nova versão disponível" e só recarrega quando o admin aceitar, para não perder um formulário preenchido.
+   - **iOS:** `apple-touch-icon` e metatags próprias; no Safari a instalação é manual ("Adicionar à Tela de Início"), então o painel mostra uma dica uma única vez.
+   - **Teste:** o Playwright confere o manifest, o registro do service worker e que as chamadas ao Supabase não vêm do cache. Lighthouse PWA entra na checagem.
+2. **Qualidade.**
+   - **Playwright:** a cobertura das E5 a E8 já existe; falta uma auditoria de **acessibilidade** das telas do painel (modais com foco preso e `role="dialog"`, foco devolvido ao botão de origem, `Esc` fecha), nas 4 larguras.
+   - **Pendências antigas da E1/E2** que entram aqui: tema escuro do painel, divisão do bundle (rotas pesadas já são `lazy`; medir o restante) e a URL de redirecionamento da recuperação de senha.
+   - **Meta de bundle:** o painel de entrada abaixo de 250 KB de JS comprimido, medido e registrado.
+3. **Meta Conversions API.**
+   - Edge Function `meta-capi` (já prevista na arquitetura) que recebe o `Lead` e envia à Meta com o token guardado como **segredo do Supabase**. O navegador manda o mesmo `event_id` do pixel, e a Meta remove a duplicata.
+   - **LGPD:** só envia se o visitante aceitou os cookies. E-mail e telefone seguem para a Meta apenas como **hash SHA-256**, e nenhum dado pessoal vai para log.
+   - **Abuso:** a função valida o corpo com Zod, limita o tamanho e responde só com o status. O token nunca aparece no front.
+   - **Bloqueio:** depende da conta de anúncios e do ID do pixel do cliente. Sem eles, a função fica pronta e **desligada** (a ausência do segredo desativa o envio), com teste para os dois estados.
+   - **Atenção:** publicar a função é "deploy de function" e exige a sua autorização explícita.
+4. **Produção.**
+   - **Cloudflare Pages:** só o passo de publicação do workflow muda (o build é o mesmo). O site passa a ter cabeçalhos reais via `_headers` (CSP, `X-Content-Type-Options`, `Referrer-Policy`, HSTS), o que o GitHub Pages não permitia. O `BASE_PATH` vira `/` com domínio próprio. Mantém-se o agendamento a cada 30 minutos pelo GitHub Actions, que dispara o deploy.
+   - **Domínio próprio:** registrar e apontar; depois atualizar `SITE_URL`, a URL de recuperação de senha no Supabase e o `sitemap`.
+   - **Supabase Pro:** backup diário e sem pausa por inatividade. Como o projeto é **compartilhado** com outro app, a decisão de assinar (e quem paga) é sua; a alternativa é migrar a DK para um projeto próprio, o que é mais limpo e evita o risco do outro app. Recomendo o projeto próprio.
+   - **Checklist de entrega:** trocar a senha do admin, conferir o WhatsApp real, colocar o ID do pixel real, aplicar as migrations (inclusive as da E6 a E8, ainda pendentes), `migration repair` completo, teste de restauração do backup e revisão final da política de privacidade.
+
+**Fora do escopo da E9:** notificações push, modo offline com sincronização de escrita (o painel é online), app nativo, GA4 e exportações do caixa (candidatos a depois do MVP).
+
+**Ordem recomendada:** PWA, depois qualidade, depois produção (Cloudflare e domínio) e por último a Conversions API, que espera a conta de anúncios. Cada bloco vira commits próprios e pode ir ao ar sozinho.
+
+**Perguntas (respondidas por delegação: seguir as recomendações):**
+
+- Aprova a ordem acima e o painel **sem escrita offline** (online, com o shell em cache)?
+- Prefere **migrar a DK para um projeto Supabase próprio** (recomendado) ou assinar o Pro no projeto compartilhado?
+- Já existe **domínio** escolhido e **conta de anúncios** da Meta, ou deixo a Conversions API pronta e desligada?
+
+- [ ] PWA do painel e do site: `manifest`, ícones 192/512/maskable, service worker com cache só do shell e aviso de nova versão
+- [ ] Qualidade: auditoria de acessibilidade dos modais, tema escuro, medição do bundle e URL de recuperação de senha
+- [ ] Meta Conversions API (Edge Function `meta-capi`, desligada sem segredo, com `event_id` e hash SHA-256)
+- [ ] Migração do deploy para Cloudflare Pages com cabeçalhos de segurança; domínio próprio
+- [ ] Supabase: projeto próprio ou Pro, backup, e checklist de entrega (senha do admin, WhatsApp e pixel reais)
 
 ## Concluídas
 
