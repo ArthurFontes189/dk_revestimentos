@@ -26,6 +26,7 @@ const TIPOS = {
   '.webp': 'image/webp',
   '.mp4': 'video/mp4',
   '.woff2': 'font/woff2',
+  '.webmanifest': 'application/manifest+json',
 };
 
 function localizar(urlPath) {

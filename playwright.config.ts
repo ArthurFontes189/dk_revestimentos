@@ -15,7 +15,13 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
-  use: { baseURL: URL_BASE, locale: 'pt-BR', trace: 'retain-on-failure' },
+  // Service workers bloqueados por padrão: o cache atrapalharia os mocks de page.route (só pwa.spec os liga).
+  use: {
+    baseURL: URL_BASE,
+    locale: 'pt-BR',
+    trace: 'retain-on-failure',
+    serviceWorkers: 'block',
+  },
   projects: TELAS.map((tela) => ({
     name: tela.name,
     use: {

@@ -75,6 +75,8 @@ const dadosEstruturados = organizacao
     )}
     <meta name="theme-color" content="#0e0f13" />
     <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+    <link rel="manifest" href={url('manifest.webmanifest')} />
+    <link rel="apple-touch-icon" href={url('icons/apple-touch-icon.png')} />
     <!-- Fontes do primeiro desenho da página (subconjunto latino): baixadas já no início. -->
     <link rel="preload" as="font" type="font/woff2" href={frauncesLatim} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={jakartaLatim} crossorigin />
@@ -85,6 +87,14 @@ const dadosEstruturados = organizacao
   <body>
     <slot />
     <BannerCookies />
+    <script is:inline define:vars={{ caminhoSw: url('sw.js') }}>
+      // PWA: cache offline básico do site. O painel (/admin/) registra o próprio worker.
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register(caminhoSw).catch(() => undefined);
+        });
+      }
+    </script>
     <script>
       // Guarda de qual anúncio/campanha o visitante veio, para gravar no lead.
       import { capturarOrigem } from '../lib/origem-cliente';

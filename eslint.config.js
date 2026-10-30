@@ -35,4 +35,9 @@ export default tseslint.config(
     files: ['scripts/**/*.mjs', '**/*.config.{js,mjs,ts}'],
     languageOptions: { globals: globals.node },
   },
+  {
+    // Service workers do PWA: rodam no escopo do worker, não no da página.
+    files: ['apps/*/public/sw.js'],
+    languageOptions: { globals: globals.serviceworker },
+  },
 );
