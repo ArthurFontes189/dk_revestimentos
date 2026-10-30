@@ -137,7 +137,7 @@ test('deve caber todos os itens do menu na tela quando é celular', async ({ pag
   const itens = await page
     .getByRole('navigation', { name: 'Principal' })
     .last()
-    .getByRole('link')
+    .locator('a, button')
     .evaluateAll((links) =>
       links.map((link) => ({
         texto: link.textContent,
@@ -146,9 +146,27 @@ test('deve caber todos os itens do menu na tela quando é celular', async ({ pag
       })),
     );
 
-  expect(itens.length).toBeGreaterThanOrEqual(5);
+  expect(itens.length).toBe(5);
   for (const item of itens) {
     expect(item.cortado, `${item.texto} está cortado`).toBe(false);
     expect(item.direita, `${item.texto} passa da borda da tela`).toBeLessThanOrEqual(largura);
   }
+});
+
+test('deve abrir Equipe, Portfólio e Depoimentos pelo item Mais quando é celular', async ({
+  page,
+}, info) => {
+  const largura = info.project.use.viewport?.width ?? 0;
+  test.skip(!ehCelular(largura), 'o item Mais só existe no celular');
+  await entrarComoAdmin(page);
+  await page.route(URL_LEADS, (rota) => responderJson(rota, LEADS));
+  await page.goto('/admin/#/leads');
+
+  await page.getByRole('button', { name: 'Mais' }).click();
+  const extras = page.getByRole('navigation', { name: 'Mais opções' });
+  await expect(extras.getByRole('link')).toHaveText(['Equipe', 'Portfólio', 'Depoimentos']);
+
+  await extras.getByRole('link', { name: 'Equipe' }).click();
+  await expect(page).toHaveURL(/#\/equipe$/);
+  await expect(page.getByRole('navigation', { name: 'Mais opções' })).toBeHidden();
 });

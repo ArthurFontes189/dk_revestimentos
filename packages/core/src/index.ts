@@ -3,6 +3,7 @@ export * from './cliente';
 export * from './cpf';
 export * from './dinheiro';
 export * from './enums';
+export * from './equipe';
 export * from './lead';
 export * from './leads';
 export * from './mensagem';

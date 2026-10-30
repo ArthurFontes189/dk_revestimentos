@@ -168,17 +168,19 @@ Spec: #9, #10.
 
 **Fora do escopo da E7:** folha de pagamento mensal, adiantamentos e relatórios por funcionário (depois do MVP). Categorias de saída livres e o painel de caixa são da E8.
 
-**Perguntas para você:**
+**Decisões aprovadas:** a diária paga sempre lança a saída no caixa; o menu do celular usa o item **Mais**.
+
+**Perguntas (respondidas):**
 
 - A diária paga deve **sempre** lançar saída no caixa (como propus), ou só quando você escolher, como no insumo?
 - O item **Mais** no menu do celular está bom, ou prefere trocar um dos 6 itens atuais por Equipe?
 
-- [ ] Migration `employees` + `service_workers` + `service_expenses` + ligação em `transactions` + bucket `contratos` + RPCs, com RLS só do admin e `revoke` explícito
-- [ ] `obras_resumo` com `custo_diarias` e `custo_insumos`; DRE da obra com custo real
-- [ ] `@dk/core`: schemas de funcionário, alocação e insumo, com testes
-- [ ] Painel de equipe (um só formulário), contrato por URL assinada e alocação por obra com "pago" persistido
-- [ ] Insumos por obra com opção de lançar no caixa; excluir o insumo remove o lançamento
-- [ ] Testes pgTAP e e2e
+- [x] Migration `20261030120000_equipe_insumos.sql` (escrita, ainda não executada): `employees` + `service_workers` + `service_expenses` + ligação em `transactions` + bucket `contratos` + RPCs, com RLS só do admin e `revoke` explícito
+- [x] `obras_resumo` com `custo_diarias` e `custo_insumos`; DRE da obra com custo real
+- [x] `@dk/core`: schemas de funcionário, alocação e insumo, com testes
+- [x] Painel: página **Equipe** (um só formulário, filtro ativo/inativo, contrato por URL assinada de 60 s) e, em cada obra, **Equipe e insumos** (alocar, marcar pago, remover). Menu do celular com 4 itens + **Mais**
+- [x] Insumos por obra com opção de lançar no caixa; excluir o insumo remove o lançamento
+- [x] Testes: pgTAP `rls_equipe_insumos.test.sql` (20 asserções, ainda não executado: roda no CI) e 12 cenários e2e novos (310 execuções passando)
 - [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; incluir a versão no `migration repair`)
 
 ### E8 — Fluxo de caixa

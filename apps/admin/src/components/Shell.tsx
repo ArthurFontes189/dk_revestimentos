@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useSessao } from '../features/auth/SessaoProvider';
+import { Dialogo } from './Dialogo';
 
 // Cada entrega do docs/PLANO.md acrescenta o seu item aqui (leads, clientes, obras…).
 const ITENS_MENU = [
@@ -8,14 +9,20 @@ const ITENS_MENU = [
   { para: '/leads', rotulo: 'Leads' },
   { para: '/clientes', rotulo: 'Clientes' },
   { para: '/obras', rotulo: 'Obras' },
+  { para: '/equipe', rotulo: 'Equipe' },
   { para: '/portfolio', rotulo: 'Portfólio' },
   { para: '/depoimentos', rotulo: 'Depoimentos' },
 ] as const;
 
+// No celular só os quatro de uso diário ficam na barra; o resto abre em "Mais".
+const QUANTIDADE_NA_BARRA = 4;
+const ITENS_BARRA = ITENS_MENU.slice(0, QUANTIDADE_NA_BARRA);
+const ITENS_EXTRAS = ITENS_MENU.slice(QUANTIDADE_NA_BARRA);
+
 const classeLinkBase =
   'focus-visible:outline-ouro-500 flex min-h-11 items-center rounded-lg px-3 transition-colors focus-visible:outline-2';
 
-// Barra inferior do celular: seis itens precisam caber em 360 px, então padding e fonte menores.
+// Barra inferior do celular: cinco itens precisam caber em 360 px, então padding e fonte menores.
 const classeLinkInferior =
   'focus-visible:outline-ouro-500 text-ebano-100 flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-lg px-0 text-[10px] tracking-tight transition-colors focus-visible:outline-2';
 
@@ -29,6 +36,7 @@ function Marca() {
 
 export function Shell({ children }: { children: ReactNode }) {
   const { sair } = useSessao();
+  const [maisAberto, setMaisAberto] = useState(false);
 
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[16rem_1fr]">
@@ -76,7 +84,7 @@ export function Shell({ children }: { children: ReactNode }) {
         aria-label="Principal"
         className="bg-ebano-950 text-creme fixed inset-x-0 bottom-0 flex justify-around px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden"
       >
-        {ITENS_MENU.map((item) => (
+        {ITENS_BARRA.map((item) => (
           <Link
             key={item.para}
             to={item.para}
@@ -86,7 +94,26 @@ export function Shell({ children }: { children: ReactNode }) {
             {item.rotulo}
           </Link>
         ))}
+        <button type="button" onClick={() => setMaisAberto(true)} className={classeLinkInferior}>
+          Mais
+        </button>
       </nav>
+
+      <Dialogo aberto={maisAberto} titulo="Mais" aoFechar={() => setMaisAberto(false)}>
+        <nav aria-label="Mais opções" className="flex flex-col gap-1">
+          {ITENS_EXTRAS.map((item) => (
+            <Link
+              key={item.para}
+              to={item.para}
+              onClick={() => setMaisAberto(false)}
+              className={`${classeLinkBase} text-ebano-900 hover:bg-ebano-100`}
+              activeProps={{ className: 'bg-ebano-100 text-carvalho-700' }}
+            >
+              {item.rotulo}
+            </Link>
+          ))}
+        </nav>
+      </Dialogo>
     </div>
   );
 }

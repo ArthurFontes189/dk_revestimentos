@@ -9,6 +9,7 @@ import {
   mudarStatusObra,
   registrarRecebimento,
 } from './api';
+import { DetalheObra } from '../equipe/DetalheObra';
 import { FormularioObra } from './FormularioObra';
 import type { Obra } from './tipos';
 
@@ -23,6 +24,7 @@ export function ObrasPage() {
   const [filtro, setFiltro] = useState('');
   const [formulario, setFormulario] = useState<{ obra: Obra | null } | null>(null);
   const [excluindo, setExcluindo] = useState<Obra | null>(null);
+  const [custos, setCustos] = useState<Obra | null>(null);
 
   const obras = consulta.data ?? [];
   const visiveis = filtro ? obras.filter((o) => o.status === filtro) : obras;
@@ -118,8 +120,11 @@ export function ObrasPage() {
 
       <ul className="mt-6 space-y-3">
         {visiveis.map((obra) => {
-          // Diárias e insumos só existem na E7: até lá o custo é zero, sem número inventado.
-          const dre = calcularDre({ valorTotal: obra.valor_total, diarias: [], insumos: [] });
+          const dre = calcularDre({
+            valorTotal: obra.valor_total,
+            diarias: [obra.custo_diarias],
+            insumos: [obra.custo_insumos],
+          });
           return (
             <li key={obra.id} className="border-ebano-200 rounded-xl border bg-white p-4">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-start">
@@ -168,6 +173,14 @@ export function ObrasPage() {
                   <button
                     type="button"
                     className={classeBotao}
+                    aria-label={`Equipe e insumos: ${obra.descricao}`}
+                    onClick={() => setCustos(obra)}
+                  >
+                    Equipe e insumos
+                  </button>
+                  <button
+                    type="button"
+                    className={classeBotao}
                     aria-label={`Editar: ${obra.descricao}`}
                     onClick={() => setFormulario({ obra })}
                   >
@@ -190,6 +203,14 @@ export function ObrasPage() {
           );
         })}
       </ul>
+
+      <Dialogo
+        aberto={custos !== null}
+        titulo={custos ? `Equipe e insumos: ${custos.descricao}` : ''}
+        aoFechar={() => setCustos(null)}
+      >
+        {custos && <DetalheObra obra={custos} />}
+      </Dialogo>
 
       <Dialogo
         aberto={formulario !== null}

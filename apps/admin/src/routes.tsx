@@ -13,6 +13,7 @@ import { LoginPage } from './features/auth/LoginPage';
 import { RedefinirSenhaPage } from './features/auth/RedefinirSenhaPage';
 import { useSessao } from './features/auth/SessaoProvider';
 import { ClientesPage } from './features/clientes/ClientesPage';
+import { EquipePage } from './features/equipe/EquipePage';
 import { InicioPage } from './features/inicio/InicioPage';
 import { LeadsPage } from './features/leads/LeadsPage';
 import { ObrasPage } from './features/obras/ObrasPage';
@@ -62,6 +63,11 @@ const obras = createRoute({
   path: '/obras',
   component: ObrasPage,
 });
+const equipe = createRoute({
+  getParentRoute: () => protegida,
+  path: '/equipe',
+  component: EquipePage,
+});
 // Páginas com o processamento de mídia ficam em arquivos separados, carregados só quando abertas.
 const portfolio = createRoute({
   getParentRoute: () => protegida,
@@ -85,7 +91,7 @@ export const router = createRouter({
   routeTree: raiz.addChildren([
     login,
     redefinirSenha,
-    protegida.addChildren([inicio, leads, clientes, obras, portfolio, depoimentos]),
+    protegida.addChildren([inicio, leads, clientes, obras, equipe, portfolio, depoimentos]),
   ]),
   history: createHashHistory(),
   defaultPendingComponent: Carregando,

@@ -17,4 +17,6 @@ export interface Obra {
   updated_at: string;
   valor_recebido: number;
   saldo: number;
+  custo_diarias: number;
+  custo_insumos: number;
 }
