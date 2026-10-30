@@ -1,8 +1,14 @@
-import { buscarClientes, formatarCpf, formatarTelefoneBR, montarLinkWhatsApp } from '@dk/core';
+import {
+  buscarClientes,
+  formatarBRL,
+  formatarCpf,
+  formatarTelefoneBR,
+  montarLinkWhatsApp,
+} from '@dk/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Dialogo } from '../../components/Dialogo';
-import { excluirCliente, listarClientes, mensagemDoCliente } from './api';
+import { excluirCliente, listarClientes, listarTotaisPorCliente, mensagemDoCliente } from './api';
 import { FormularioCliente } from './FormularioCliente';
 import type { Cliente } from './tipos';
 
@@ -24,6 +30,8 @@ function linkDoCliente(cliente: Cliente): string | null {
 export function ClientesPage() {
   const clienteQuery = useQueryClient();
   const consulta = useQuery({ queryKey: ['clientes'], queryFn: listarClientes });
+  // Totais são um extra: se falharem, a lista de clientes continua funcionando sem eles.
+  const totais = useQuery({ queryKey: ['clientes', 'totais'], queryFn: listarTotaisPorCliente });
   const [busca, setBusca] = useState('');
   const [formulario, setFormulario] = useState<{ cliente: Cliente | null } | null>(null);
   const [excluindo, setExcluindo] = useState<Cliente | null>(null);
@@ -114,6 +122,12 @@ export function ClientesPage() {
                   {formatarTelefoneBR(cliente.telefone)}
                   {cliente.cpf && ` · CPF ${formatarCpf(cliente.cpf)}`}
                 </p>
+                {totais.data?.get(cliente.id) && (
+                  <p className="mt-1 text-sm">
+                    Contratado {formatarBRL(totais.data.get(cliente.id)!.contratado)} · Pago{' '}
+                    {formatarBRL(totais.data.get(cliente.id)!.pago)}
+                  </p>
+                )}
                 {cliente.endereco && (
                   <p className="text-texto-suave text-sm break-words">{cliente.endereco}</p>
                 )}

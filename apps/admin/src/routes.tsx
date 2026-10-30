@@ -15,6 +15,7 @@ import { useSessao } from './features/auth/SessaoProvider';
 import { ClientesPage } from './features/clientes/ClientesPage';
 import { InicioPage } from './features/inicio/InicioPage';
 import { LeadsPage } from './features/leads/LeadsPage';
+import { ObrasPage } from './features/obras/ObrasPage';
 import { supabaseConfigurado } from './lib/supabase';
 
 /** Área protegida: só admin logado entra. */
@@ -56,6 +57,11 @@ const clientes = createRoute({
   path: '/clientes',
   component: ClientesPage,
 });
+const obras = createRoute({
+  getParentRoute: () => protegida,
+  path: '/obras',
+  component: ObrasPage,
+});
 // Páginas com o processamento de mídia ficam em arquivos separados, carregados só quando abertas.
 const portfolio = createRoute({
   getParentRoute: () => protegida,
@@ -79,7 +85,7 @@ export const router = createRouter({
   routeTree: raiz.addChildren([
     login,
     redefinirSenha,
-    protegida.addChildren([inicio, leads, clientes, portfolio, depoimentos]),
+    protegida.addChildren([inicio, leads, clientes, obras, portfolio, depoimentos]),
   ]),
   history: createHashHistory(),
   defaultPendingComponent: Carregando,

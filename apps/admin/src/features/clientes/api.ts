@@ -1,4 +1,4 @@
-import type { DadosCliente } from '@dk/core';
+import { totaisDoCliente, type DadosCliente, type TotaisCliente } from '@dk/core';
 import { supabase } from '../../lib/supabase';
 import type { Cliente } from './tipos';
 
@@ -14,6 +14,30 @@ export async function listarClientes(): Promise<Cliente[]> {
     .order('created_at', { ascending: false });
   if (error) throw error;
   return data as Cliente[];
+}
+
+/** Contratado e pago por cliente: obras somadas e só as ENTRADAS do caixa. */
+export async function listarTotaisPorCliente(): Promise<Map<number, TotaisCliente>> {
+  const [obras, caixa] = await Promise.all([
+    cliente().from('services').select('client_id, valor_total'),
+    cliente().from('transactions').select('client_id, tipo, valor').eq('tipo', 'entrada'),
+  ]);
+  if (obras.error) throw obras.error;
+  if (caixa.error) throw caixa.error;
+
+  const ids = new Set<number>();
+  for (const { client_id } of obras.data) ids.add(client_id);
+  for (const { client_id } of caixa.data) if (client_id !== null) ids.add(client_id);
+
+  return new Map(
+    [...ids].map((id) => [
+      id,
+      totaisDoCliente(
+        obras.data.filter((o) => o.client_id === id),
+        caixa.data.filter((t) => t.client_id === id),
+      ),
+    ]),
+  );
 }
 
 export async function criarCliente(dados: DadosCliente): Promise<void> {

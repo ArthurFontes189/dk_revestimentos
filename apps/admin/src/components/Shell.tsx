@@ -7,6 +7,7 @@ const ITENS_MENU = [
   { para: '/', rotulo: 'Início' },
   { para: '/leads', rotulo: 'Leads' },
   { para: '/clientes', rotulo: 'Clientes' },
+  { para: '/obras', rotulo: 'Obras' },
   { para: '/portfolio', rotulo: 'Portfólio' },
   { para: '/depoimentos', rotulo: 'Depoimentos' },
 ] as const;
@@ -14,9 +15,9 @@ const ITENS_MENU = [
 const classeLinkBase =
   'focus-visible:outline-ouro-500 flex min-h-11 items-center rounded-lg px-3 transition-colors focus-visible:outline-2';
 
-// Barra inferior do celular: cinco itens precisam caber em 360 px, então padding e fonte menores.
+// Barra inferior do celular: seis itens precisam caber em 360 px, então padding e fonte menores.
 const classeLinkInferior =
-  'focus-visible:outline-ouro-500 text-ebano-100 flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-lg px-1 text-[11px] transition-colors focus-visible:outline-2';
+  'focus-visible:outline-ouro-500 text-ebano-100 flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-lg px-0 text-[10px] tracking-tight transition-colors focus-visible:outline-2';
 
 function Marca() {
   return (
