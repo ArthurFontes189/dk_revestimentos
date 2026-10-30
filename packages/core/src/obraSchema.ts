@@ -45,18 +45,31 @@ export const obraSchema = z.object({
 
 export type DadosObra = z.infer<typeof obraSchema>;
 
+const entradaInicial = z
+  .string()
+  .transform((texto) => (texto.trim() === '' ? 0 : lerValorBRL(texto)))
+  .refine((valor) => valor !== null, 'Valor inválido') as z.ZodType<number, string>;
+
+const entradaCabeNoTotal = (obra: { valor_entrada: number; valor_total: number }) =>
+  paraCentavos(obra.valor_entrada) <= paraCentavos(obra.valor_total);
+
+const erroEntradaAcimaDoTotal = {
+  path: ['valor_entrada'],
+  message: 'A entrada não pode passar do valor total',
+};
+
 /** Obra nova: aceita a entrada inicial, que vira o primeiro lançamento no caixa. */
 export const novaObraSchema = obraSchema
-  .extend({
-    valor_entrada: z
-      .string()
-      .transform((texto) => (texto.trim() === '' ? 0 : lerValorBRL(texto)))
-      .refine((valor) => valor !== null, 'Valor inválido') as z.ZodType<number, string>,
-  })
-  .refine((obra) => paraCentavos(obra.valor_entrada) <= paraCentavos(obra.valor_total), {
-    path: ['valor_entrada'],
-    message: 'A entrada não pode passar do valor total',
-  });
+  .extend({ valor_entrada: entradaInicial })
+  .refine(entradaCabeNoTotal, erroEntradaAcimaDoTotal);
+
+/** Obra criada junto com a conversão do lead: o cliente ainda não existe, então não há client_id. */
+export const obraDaConversaoSchema = obraSchema
+  .omit({ client_id: true })
+  .extend({ valor_entrada: entradaInicial })
+  .refine(entradaCabeNoTotal, erroEntradaAcimaDoTotal);
+
+export type DadosObraDaConversao = z.infer<typeof obraDaConversaoSchema>;
 
 export interface TotaisCliente {
   contratado: number;

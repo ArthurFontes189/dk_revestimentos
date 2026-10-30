@@ -1,5 +1,6 @@
 import {
   contarPendentes,
+  type DadosObraDaConversao,
   filtrarPorStatus,
   formatarTelefoneBR,
   montarLinkWhatsApp,
@@ -10,7 +11,9 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
+import { Dialogo } from '../../components/Dialogo';
 import { atualizarStatusLead, converterLead, excluirLead, listarLeads } from './api';
+import { FormularioConversaoObra } from './FormularioConversaoObra';
 import type { Lead } from './tipos';
 
 const FILTROS: readonly FiltroStatus[] = ['Todos', ...STATUS_LEAD];
@@ -98,13 +101,17 @@ function DetalheLead({ lead, aoVoltar }: { lead: Lead; aoVoltar: () => void }) {
       return clienteQuery.invalidateQueries({ queryKey: ['leads'] });
     },
   });
+  const [criandoObra, setCriandoObra] = useState(false);
   const converter = useMutation({
-    mutationFn: () => converterLead(lead.id),
-    onSuccess: () =>
-      Promise.all([
+    mutationFn: (obra: DadosObraDaConversao | null) => converterLead(lead.id, obra),
+    onSuccess: () => {
+      setCriandoObra(false);
+      return Promise.all([
         clienteQuery.invalidateQueries({ queryKey: ['leads'] }),
         clienteQuery.invalidateQueries({ queryKey: ['clientes'] }),
-      ]),
+        clienteQuery.invalidateQueries({ queryKey: ['obras'] }),
+      ]);
+    },
   });
 
   const whatsapp = linkDoLead(lead);
@@ -164,9 +171,13 @@ function DetalheLead({ lead, aoVoltar }: { lead: Lead; aoVoltar: () => void }) {
         <p role="status" className="bg-ouro-100 text-ebano-950 mt-4 rounded-lg p-3 text-sm">
           {conversao.cliente_novo
             ? `Cliente ${conversao.codigo} cadastrado e lead fechado.`
-            : `Este telefone já era do cliente ${conversao.codigo}. Lead fechado.`}{' '}
-          <Link to="/clientes" className="font-medium underline">
-            Ver clientes
+            : `Este telefone já era do cliente ${conversao.codigo}. Lead fechado.`}
+          {conversao.obra_id !== null && ' Ficha de obra criada.'}{' '}
+          <Link
+            to={conversao.obra_id !== null ? '/obras' : '/clientes'}
+            className="font-medium underline"
+          >
+            {conversao.obra_id !== null ? 'Ver obras' : 'Ver clientes'}
           </Link>
         </p>
       )}
@@ -181,10 +192,23 @@ function DetalheLead({ lead, aoVoltar }: { lead: Lead; aoVoltar: () => void }) {
           <button
             type="button"
             disabled={converter.isPending}
-            onClick={() => converter.mutate()}
+            onClick={() => converter.mutate(null)}
             className={classeBotaoSecundario}
           >
-            {converter.isPending ? 'Convertendo…' : 'Converter em cliente'}
+            {converter.isPending && !criandoObra ? 'Convertendo…' : 'Converter em cliente'}
+          </button>
+        )}
+        {lead.status !== 'Fechado' && (
+          <button
+            type="button"
+            disabled={converter.isPending}
+            onClick={() => {
+              converter.reset();
+              setCriandoObra(true);
+            }}
+            className={classeBotaoSecundario}
+          >
+            Converter e criar obra
           </button>
         )}
         {whatsapp && (
@@ -225,6 +249,24 @@ function DetalheLead({ lead, aoVoltar }: { lead: Lead; aoVoltar: () => void }) {
           </button>
         )}
       </div>
+
+      <Dialogo
+        aberto={criandoObra}
+        titulo="Converter e criar obra"
+        aoFechar={() => setCriandoObra(false)}
+      >
+        <FormularioConversaoObra
+          descricaoInicial={lead.tipo_servico}
+          salvando={converter.isPending}
+          aoConfirmar={(obra) => converter.mutate(obra)}
+          aoCancelar={() => setCriandoObra(false)}
+        />
+        {converter.isError && (
+          <p role="alert" className="mt-4 text-sm text-red-700">
+            Não foi possível converter: {mensagemDaConversao(converter.error)}
+          </p>
+        )}
+      </Dialogo>
     </article>
   );
 }

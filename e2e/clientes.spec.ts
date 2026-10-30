@@ -170,6 +170,64 @@ test('deve converter o lead em cliente quando o admin clica em converter', async
   );
 });
 
+test('deve enviar a obra junto com a conversão quando o admin converte e cria a ficha', async ({
+  page,
+}) => {
+  await entrarComoAdmin(page);
+  let chamada: unknown;
+  await page.route(URL_LEADS, (rota) => responderJson(rota, LEADS));
+  await page.route(URL_CONVERTER, async (rota) => {
+    chamada = rota.request().postDataJSON();
+    await responderJson(rota, [
+      { cliente_id: 1, codigo: 'CLI-0001', cliente_novo: true, obra_id: 5 },
+    ]);
+  });
+  await page.goto('/admin/#/leads');
+
+  await page.getByRole('button', { name: /Maria Souza/ }).click();
+  await page.getByRole('button', { name: 'Converter e criar obra' }).click();
+  await page.getByLabel('Valor total (R$)').fill('8.000,00');
+  await page.getByLabel('Entrada inicial (R$, opcional)').fill('2.000,00');
+  await page.getByRole('button', { name: 'Converter e criar obra' }).last().click();
+
+  await expect
+    .poll(() => chamada)
+    .toMatchObject({
+      p_lead_id: 1,
+      p_obra: {
+        descricao: 'Marcenaria Sob Medida',
+        valor_total: 8000,
+        valor_entrada: 2000,
+        status: 'A Iniciar',
+      },
+    });
+  await expect(page.getByRole('status')).toContainText('Ficha de obra criada.');
+});
+
+test('deve avisar e não converter quando a entrada da obra passa do valor total', async ({
+  page,
+}) => {
+  await entrarComoAdmin(page);
+  let chamou = false;
+  await page.route(URL_LEADS, (rota) => responderJson(rota, LEADS));
+  await page.route(URL_CONVERTER, async (rota) => {
+    chamou = true;
+    await rota.fulfill({ status: 204, body: '' });
+  });
+  await page.goto('/admin/#/leads');
+
+  await page.getByRole('button', { name: /Maria Souza/ }).click();
+  await page.getByRole('button', { name: 'Converter e criar obra' }).click();
+  await page.getByLabel('Valor total (R$)').fill('1000');
+  await page.getByLabel('Entrada inicial (R$, opcional)').fill('1500');
+  await page.getByRole('button', { name: 'Converter e criar obra' }).last().click();
+
+  await expect(page.getByRole('dialog').getByRole('alert')).toContainText(
+    'A entrada não pode passar do valor total',
+  );
+  expect(chamou).toBe(false);
+});
+
 test('deve avisar que o telefone já era cliente quando a conversão reaproveita o cadastro', async ({
   page,
 }) => {

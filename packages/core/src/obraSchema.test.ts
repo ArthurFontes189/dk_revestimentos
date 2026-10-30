@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { novaObraSchema, obraSchema, totaisDoCliente } from './obraSchema';
+import { novaObraSchema, obraDaConversaoSchema, obraSchema, totaisDoCliente } from './obraSchema';
 
 const base = {
   client_id: 7,
@@ -99,5 +99,20 @@ describe('totaisDoCliente', () => {
 
   it('deve devolver zeros quando o cliente não tem obras nem entradas', () => {
     expect(totaisDoCliente([], [])).toEqual({ contratado: 0, pago: 0, saldo: 0 });
+  });
+});
+
+describe('obraDaConversaoSchema', () => {
+  const semCliente = { ...base, client_id: undefined };
+
+  it('deve aceitar a obra sem cliente quando a entrada cabe no total', () => {
+    const obra = obraDaConversaoSchema.parse({ ...semCliente, valor_entrada: '2.000,00' });
+    expect(obra).toMatchObject({ valor_total: 12500, valor_entrada: 2000 });
+    expect(obra).not.toHaveProperty('client_id');
+  });
+
+  it('deve recusar quando a entrada passa do valor total', () => {
+    const resultado = obraDaConversaoSchema.safeParse({ ...semCliente, valor_entrada: '13000' });
+    expect(resultado.success).toBe(false);
   });
 });

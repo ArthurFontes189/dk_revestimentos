@@ -146,7 +146,7 @@ Spec: #8.
 - [x] Clientes: total contratado e total pago (obras somadas e só entradas do caixa)
 - [x] DRE da obra usando `calcularDre` (custos zerados até a E7)
 - [x] Testes: pgTAP `rls_obras_caixa.test.sql` (18 asserções, ainda não executado: roda no CI) e 7 cenários e2e novos em `obras.spec.ts` (257 execuções passando)
-- [ ] Pendente na E6: botão "Criar ficha de obra" ao converter o lead e na página do cliente (a RPC já aceita a obra)
+- [x] Botão **Converter e criar obra** no CRM de leads (cliente, ficha e entrada numa transação) com 2 cenários e2e. A criação a partir da página do cliente não foi feita: a página Obras já cria a ficha escolhendo o cliente
 - [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; incluir a versão no `migration repair`)
 
 ### E7 — Equipe, diárias e insumos

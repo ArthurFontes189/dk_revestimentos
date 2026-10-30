@@ -1,4 +1,4 @@
-import type { StatusLead } from '@dk/core';
+import type { DadosObraDaConversao, StatusLead } from '@dk/core';
 import { supabase } from '../../lib/supabase';
 import type { Lead } from './tipos';
 
@@ -25,11 +25,23 @@ export interface ResultadoConversao {
   cliente_id: number;
   codigo: string;
   cliente_novo: boolean;
+  /** Só vem preenchido quando a conversão criou a ficha de obra. */
+  obra_id: number | null;
 }
 
-/** Cria (ou localiza pelo telefone) o cliente e fecha o lead, tudo numa transação no banco. */
-export async function converterLead(id: number): Promise<ResultadoConversao> {
-  const { data, error } = await cliente().rpc('converter_lead', { p_lead_id: id });
+/**
+ * Cria (ou localiza pelo telefone) o cliente e fecha o lead, tudo numa transação no banco.
+ * Com `obra`, cria também a ficha e a entrada no caixa na mesma transação.
+ */
+export async function converterLead(
+  id: number,
+  obra: DadosObraDaConversao | null = null,
+): Promise<ResultadoConversao> {
+  // Sem obra, a chamada fica idêntica à da E5 (o parâmetro tem default no banco).
+  const { data, error } = await cliente().rpc(
+    'converter_lead',
+    obra ? { p_lead_id: id, p_obra: obra } : { p_lead_id: id },
+  );
   if (error) throw error;
   const [resultado] = data as ResultadoConversao[];
   if (!resultado) throw new Error('A conversão não devolveu o cliente.');
