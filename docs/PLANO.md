@@ -188,9 +188,47 @@ Spec: #9, #10.
 _Utilizável:_ saldo e movimentações do negócio.
 Spec: #11.
 
-- [ ] Categorias de saída unificadas (a tabela `transactions` já nasce na E6)
-- [ ] Painel de caixa com filtro por período e categoria, saldo e totais via `resumirCaixa`
-- [ ] Excluir entrada de obra reflete no valor recebido da obra
+**Desenho proposto (aguarda aprovação).** A tabela `transactions` e as saídas automáticas (diárias e insumos) já existem desde a E6 e a E7. A E8 entrega o painel e fecha as regras que impedem o caixa de divergir da obra. Os problemas da v1 a evitar: datas em formatos diferentes, categorias manuais e automáticas misturadas, e lançamentos apagados que deixavam a obra errada.
+
+1. **Dois tipos de lançamento.**
+   - **Manual:** sem obra, diária ou insumo ligados. Criar, editar e excluir livremente no painel de caixa.
+   - **Vinculado:** nasceu de uma obra (entrada, quitação), de uma diária paga ou de um insumo. O valor e a categoria são geridos na obra.
+2. **Regras dos vinculados.**
+   - **Entrada de obra** (sem diária nem insumo): pode ser **excluída** no caixa, e o valor recebido da obra cai sozinho (a view `obras_resumo` soma o caixa). Não pode ser editada ali: o ajuste é feito na obra, que respeita o valor total.
+   - **Saída de diária ou de insumo:** somente leitura no caixa, com link para a obra. Apagá-la ali deixaria a diária "paga" sem saída, que era o bug da v1.
+   - **Guarda no banco:** o trigger `transactions_protege_vinculados` bloqueia `update`/`delete` de lançamentos com `worker_id` ou `expense_id`, a menos que a operação venha das funções da obra (`marcar_diaria_paga`, `salvar_insumo`) ou da exclusão da própria diária, insumo ou obra (a cascata). Isso é feito com uma variável local de transação (`dk.caixa_interno`) ligada por essas funções e por triggers `before delete` nas três tabelas. O pgTAP cobre as quatro rotas (manual, entrada, diária, insumo) e a cascata.
+3. **Categorias unificadas** em `@dk/core` (`CATEGORIAS_ENTRADA` e `CATEGORIAS_SAIDA`), com um `check` no banco para valores fora da lista:
+   - **Entradas:** `Entrada da obra`, `Recebimento` (automáticas) e `Outras entradas` (manual).
+   - **Saídas manuais:** `Madeiras & Insumos`, `Vernizes`, `Lixas & Parafusos`, `Frete & Transporte`, `Manutenção & Ferramentas`, `Custos Oficina`, `Outras saídas`.
+   - **Saídas automáticas:** `Diárias` e `Insumos & Materiais`.
+   - Dinheiro de cliente entra pela obra (quitação ou entrada), e não como lançamento manual. Manter a lista no código e no `check` significa que mudar categorias exige uma migration, o que é aceitável aqui.
+4. **Painel de caixa** (página **Caixa**):
+   - **Filtros:** período (de/até, com atalhos "Este mês", "Mês passado" e "Ano") e categoria. O padrão é o mês atual.
+   - **Totais:** cartões de entradas, saídas e saldo do período filtrado, calculados com `resumirCaixa`.
+   - **Lista:** por data, em `dd/mm/aaaa`, com categoria, descrição e, nos vinculados, o nome da obra e o selo "Automático".
+   - **Limite:** sem paginação (o negócio gera poucas centenas de lançamentos por ano). A consulta traz até 1.000 linhas e avisa se bater o limite, para o total não sair errado em silêncio.
+   - **Lançamento manual:** formulário com tipo, categoria, descrição, valor e data.
+5. **`@dk/core`:** `lancamentoSchema` (valor em reais por `lerValorBRL`, data real, categoria da lista conforme o tipo), `periodoDoAtalho` (calcula de/até em datas locais, sem fuso trocando o dia), `filtrarLancamentos` e as listas de categorias.
+6. **Obra e caixa:** excluir uma entrada no caixa invalida as consultas de obras e clientes, então "Recebido" e "Total pago" atualizam na hora.
+7. **Testes:**
+   - **Vitest:** schema, atalhos de período (virada de mês e de ano), filtros e totais em centavos.
+   - **pgTAP:** `check` de categoria, trigger de proteção nas quatro rotas, exclusão de entrada refletida na view e cascata ainda funcionando.
+   - **Playwright** nas 4 larguras: filtro, totais, lançamento manual, exclusão de entrada, selo e bloqueio nos automáticos.
+
+**Fora do escopo da E8:** exportar CSV/PDF, conciliação bancária, gráficos e fechamento mensal (candidatos a depois do MVP). Anexar comprovante também fica de fora.
+
+**Perguntas para você:**
+
+- Concorda que **diária e insumo ficam somente leitura no caixa** (geridos na obra) e que só a **entrada de obra pode ser excluída** ali?
+- Aceita que lançamento manual de **entrada** use só a categoria `Outras entradas`, com o dinheiro de cliente entrando sempre pela obra?
+- O **mês atual** como período padrão está bom?
+
+- [ ] Migration: `check` de categoria em `transactions`, trigger de proteção dos vinculados e `before delete` de diária, insumo e obra ligando a variável interna
+- [ ] `@dk/core`: categorias de entrada e saída, `lancamentoSchema`, `periodoDoAtalho` e `filtrarLancamentos`, com testes
+- [ ] Painel **Caixa**: filtros, totais via `resumirCaixa`, lista com selo de automático, lançamento manual e exclusão de entrada de obra
+- [ ] Obras e clientes recarregam quando o caixa muda
+- [ ] Testes pgTAP e e2e
+- [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; incluir a versão no `migration repair`)
 
 ### E9 — PWA, qualidade e produção
 
