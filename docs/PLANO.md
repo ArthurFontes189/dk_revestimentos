@@ -154,9 +154,32 @@ Spec: #8.
 _Utilizável:_ custo real de cada obra.
 Spec: #9, #10.
 
-- [ ] Migrations `employees`, `service_workers`, `service_expenses`; bucket privado `contratos` com URL assinada
-- [ ] Painel de funcionários (um só formulário) e alocação por obra com status de pagamento persistido
+**Desenho proposto (aguarda aprovação).** Na v1, `workers` e `expenses` eram JSON dentro da obra: cópias por valor do funcionário, ids `Date.now()`, "pago" e "excluir insumo" que não persistiam, contrato em base64 e diária que nunca virava caixa. Na v2 viram tabelas relacionais, e a E7 liga o custo ao DRE e ao caixa criados na E6.
+
+1. **`employees`** (cadastro único, um só formulário): `nome`, `cargo` (texto livre, com os cargos da v1 como sugestão), `telefone` (só dígitos, como em `clients`), `chave_pix`, `diaria_padrao numeric(12,2) >= 0`, `ativo boolean`, `contrato_path` (caminho no bucket, nunca o arquivo). Excluir um funcionário alocado é barrado (`on delete restrict`); o painel sugere desativar.
+2. **`service_workers`** (alocação por obra): `service_id` (cascata com a obra), `employee_id` (`restrict`), `valor_diaria` e `dias_trabalhados` **gravados na alocação** (copiar o valor é intencional: mudar a diária padrão depois não reescreve obras antigas), `pago boolean`, `pago_em date`. Índice único `(service_id, employee_id)`. O total da diária é `valor_diaria × dias` e fica numa coluna gerada.
+3. **`service_expenses`** (insumos): `service_id` (cascata), `categoria` (as 7 da v1), `descricao`, `valor > 0`, `data`.
+4. **Caixa sem divergência.** Insumo: a RPC `salvar_insumo(...)` cria, ajusta ou remove o lançamento de **saída** ligado (`transactions.expense_id`, `on delete cascade`, índice único parcial), na mesma transação, conforme a opção "lançar no caixa". Excluir o insumo apaga o lançamento por cascata, sem trigger de mão dupla. Diária: `marcar_diaria_paga(worker_id, pago)` lança a saída "Diárias" ao marcar e a remove ao desmarcar (`transactions.worker_id` com cascata). Assim "pago" persiste e o caixa acompanha.
+5. **DRE real.** A view `obras_resumo` ganha `custo_diarias` e `custo_insumos` (somas das tabelas novas). O painel passa a usar `calcularDre` com esses valores, fechando o "custo zero até a E7" da E6. Em centavos no front; `numeric(12,2)` no banco.
+6. **Contratos privados.** Bucket `contratos` (privado, PDF/imagem, limite de tamanho), com política em `storage.objects` só para `is_admin()` e só neste bucket (o projeto Supabase é compartilhado). O painel envia o arquivo, guarda o `contrato_path` e abre por **URL assinada de 60 s** (`createSignedUrl`). No iOS, a URL é gerada e aberta no mesmo clique, para não cair no bloqueio de popup da v1. Trocar ou apagar o contrato remove o arquivo antigo.
+7. **Painel:** página **Equipe** (lista, filtro ativo/inativo, criar/editar, contrato, WhatsApp) e, dentro de cada obra, as seções **Equipe da obra** (alocar, dias, marcar pago) e **Insumos** (adicionar, "lançar no caixa", excluir). O menu do celular já está no limite (6 itens): **Equipe** entra no menu lateral e a barra inferior ganha um item "Mais" (decidir na aprovação).
+8. **`@dk/core`:** `funcionarioSchema` (reaproveita `normalizarTelefone`), `alocacaoSchema`, `insumoSchema` e `CATEGORIAS_INSUMO`; `calcularDre` e `totalDiarias` já existem.
+9. **Testes:** Vitest (schemas, totais, arredondamento em centavos), pgTAP (RLS das 3 tabelas e do bucket, diária e insumo geram e removem lançamento, cascata, índice único da alocação, funcionário alocado protegido, DRE da view) e Playwright nas 4 larguras com o Storage simulado.
+
+**Fora do escopo da E7:** folha de pagamento mensal, adiantamentos e relatórios por funcionário (depois do MVP). Categorias de saída livres e o painel de caixa são da E8.
+
+**Perguntas para você:**
+
+- A diária paga deve **sempre** lançar saída no caixa (como propus), ou só quando você escolher, como no insumo?
+- O item **Mais** no menu do celular está bom, ou prefere trocar um dos 6 itens atuais por Equipe?
+
+- [ ] Migration `employees` + `service_workers` + `service_expenses` + ligação em `transactions` + bucket `contratos` + RPCs, com RLS só do admin e `revoke` explícito
+- [ ] `obras_resumo` com `custo_diarias` e `custo_insumos`; DRE da obra com custo real
+- [ ] `@dk/core`: schemas de funcionário, alocação e insumo, com testes
+- [ ] Painel de equipe (um só formulário), contrato por URL assinada e alocação por obra com "pago" persistido
 - [ ] Insumos por obra com opção de lançar no caixa; excluir o insumo remove o lançamento
+- [ ] Testes pgTAP e e2e
+- [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; incluir a versão no `migration repair`)
 
 ### E8 — Fluxo de caixa
 
