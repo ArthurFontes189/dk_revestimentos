@@ -116,7 +116,7 @@ Peças da E5:
 - [x] Painel: página **Clientes** (lista, busca sem acento por nome/telefone/CPF/código, criar, editar, excluir, WhatsApp) e botão **Converter em cliente** no CRM, com aviso quando o telefone já era cliente
 - [x] Menu inferior do celular ajustado: com 5 itens, "Depoimentos" saía da tela a 360 px; agora cabe (teste permanente no `admin.spec.ts`)
 - [x] Testes: pgTAP `rls_clientes.test.sql` (20 asserções: anon e não-admin barrados, conversão, reaproveitamento por telefone com DDI, lead repetido, código não reutilizado, telefone/CPF duplicados) e 9 cenários e2e novos (229 execuções passando no total)
-- [ ] pgTAP da E5 ainda não executado: não há Docker nesta máquina, então roda no CI (job `banco`) no próximo push
+- [x] pgTAP da E5, E6 e E7 passou no CI (job `banco`, run 14, 2026-10-30)
 - [x] Migration aplicada no Supabase real em 2026-10-28 (SQL Editor, numa transação) e verificada: `clients` com RLS e a política `clients_admin_all`, visitante sem `SELECT` nem `INSERT`, `converter_lead` executável só por `authenticated`, 10 colunas, sequência liberada ao admin. Outro app intacto (9 linhas em `chunks`, bucket `sources`). `CLAUDE.md` já lista a nova versão no `migration repair`
 - [ ] Total contratado e total pago corretos (depende da E6/E8)
 
@@ -139,13 +139,13 @@ Spec: #8.
 7. **Painel:** página **Obras** (lista com filtro por status e saldo a receber; detalhe com ficha, DRE, recebimentos; criar, editar, mudar status, quitar saldo, excluir) e **Criar ficha de obra** a partir do lead e da página do cliente. A página **Clientes** passa a mostrar total contratado e total pago (fecha a pendência da E5).
 8. **Testes:** Vitest (validação da obra, saldo), pgTAP (RLS, `definir_recebido`, `registrar_recebimento`, excesso, conversão com obra, exclusão em cascata, cliente com obra protegido, `concluida_em`) e Playwright nas 4 larguras.
 
-- [x] Migration `20261029120000_obras_caixa.sql`: `services` + `transactions` + view `obras_resumo` + RPCs `definir_recebido` e `registrar_recebimento`, com RLS só do admin e `revoke` explícito (escrita, ainda não executada: sem Docker, o pgTAP roda no CI)
+- [x] Migration `20261029120000_obras_caixa.sql`: `services` + `transactions` + view `obras_resumo` + RPCs `definir_recebido` e `registrar_recebimento`, com RLS só do admin e `revoke` explícito (pgTAP passou no CI em 2026-10-30; ainda não aplicada no Supabase real)
 - [x] `converter_lead(lead_id, obra jsonb)` estendida (cria cliente, obra e entrada numa transação; a chamada antiga só com `lead_id` segue valendo)
 - [x] `@dk/core`: `obraSchema`, `novaObraSchema`, `lerValorBRL` e `totaisDoCliente`, com testes
 - [x] Painel de obras: lista com filtro por status, criar (com entrada inicial), editar, mudar status, quitar saldo e excluir com aviso do que sai do caixa. Menu do celular reduzido para caber 6 itens a 360 px
 - [x] Clientes: total contratado e total pago (obras somadas e só entradas do caixa)
 - [x] DRE da obra usando `calcularDre` (custos zerados até a E7)
-- [x] Testes: pgTAP `rls_obras_caixa.test.sql` (18 asserções, ainda não executado: roda no CI) e 7 cenários e2e novos em `obras.spec.ts` (257 execuções passando)
+- [x] Testes: pgTAP `rls_obras_caixa.test.sql` (18 asserções, passou no CI) e 7 cenários e2e novos em `obras.spec.ts` (257 execuções passando)
 - [x] Botão **Converter e criar obra** no CRM de leads (cliente, ficha e entrada numa transação) com 2 cenários e2e. A criação a partir da página do cliente não foi feita: a página Obras já cria a ficha escolhendo o cliente
 - [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; incluir a versão no `migration repair`)
 
@@ -175,12 +175,12 @@ Spec: #9, #10.
 - A diária paga deve **sempre** lançar saída no caixa (como propus), ou só quando você escolher, como no insumo?
 - O item **Mais** no menu do celular está bom, ou prefere trocar um dos 6 itens atuais por Equipe?
 
-- [x] Migration `20261030120000_equipe_insumos.sql` (escrita, ainda não executada): `employees` + `service_workers` + `service_expenses` + ligação em `transactions` + bucket `contratos` + RPCs, com RLS só do admin e `revoke` explícito
+- [x] Migration `20261030120000_equipe_insumos.sql` (pgTAP passou no CI em 2026-10-30; ainda não aplicada no Supabase real): `employees` + `service_workers` + `service_expenses` + ligação em `transactions` + bucket `contratos` + RPCs, com RLS só do admin e `revoke` explícito
 - [x] `obras_resumo` com `custo_diarias` e `custo_insumos`; DRE da obra com custo real
 - [x] `@dk/core`: schemas de funcionário, alocação e insumo, com testes
 - [x] Painel: página **Equipe** (um só formulário, filtro ativo/inativo, contrato por URL assinada de 60 s) e, em cada obra, **Equipe e insumos** (alocar, marcar pago, remover). Menu do celular com 4 itens + **Mais**
 - [x] Insumos por obra com opção de lançar no caixa; excluir o insumo remove o lançamento
-- [x] Testes: pgTAP `rls_equipe_insumos.test.sql` (20 asserções, ainda não executado: roda no CI) e 12 cenários e2e novos (310 execuções passando)
+- [x] Testes: pgTAP `rls_equipe_insumos.test.sql` (20 asserções, passou no CI) e 12 cenários e2e novos (310 execuções passando)
 - [ ] Aplicar a migration no Supabase real (só com sua autorização explícita; incluir a versão no `migration repair`)
 
 ### E8 — Fluxo de caixa
