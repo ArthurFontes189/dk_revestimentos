@@ -1,0 +1,3 @@
+- [Git push em lotes](git-push-em-lotes.md) — commitar local, só enviar ao GitHub quando o dono mandar
+- [Supabase compartilhado](projeto-supabase-compartilhado.md) — o banco da DK também serve outro app; cuidados ao alterar
+- [Estado E6–E8 e pendências](estado-e6-e8-e-pendencias.md) — migrations por aplicar no Supabase real; próximo passo é o desenho da E9
