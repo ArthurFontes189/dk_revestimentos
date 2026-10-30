@@ -9,6 +9,7 @@ const ITENS_MENU = [
   { para: '/leads', rotulo: 'Leads' },
   { para: '/clientes', rotulo: 'Clientes' },
   { para: '/obras', rotulo: 'Obras' },
+  { para: '/caixa', rotulo: 'Caixa' },
   { para: '/equipe', rotulo: 'Equipe' },
   { para: '/portfolio', rotulo: 'Portfólio' },
   { para: '/depoimentos', rotulo: 'Depoimentos' },

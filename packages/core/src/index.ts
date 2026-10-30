@@ -5,6 +5,7 @@ export * from './dinheiro';
 export * from './enums';
 export * from './equipe';
 export * from './lead';
+export * from './lancamento';
 export * from './leads';
 export * from './mensagem';
 export * from './obra';

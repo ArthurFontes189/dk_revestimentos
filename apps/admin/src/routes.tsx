@@ -12,6 +12,7 @@ import { Shell } from './components/Shell';
 import { LoginPage } from './features/auth/LoginPage';
 import { RedefinirSenhaPage } from './features/auth/RedefinirSenhaPage';
 import { useSessao } from './features/auth/SessaoProvider';
+import { CaixaPage } from './features/caixa/CaixaPage';
 import { ClientesPage } from './features/clientes/ClientesPage';
 import { EquipePage } from './features/equipe/EquipePage';
 import { InicioPage } from './features/inicio/InicioPage';
@@ -63,6 +64,11 @@ const obras = createRoute({
   path: '/obras',
   component: ObrasPage,
 });
+const caixa = createRoute({
+  getParentRoute: () => protegida,
+  path: '/caixa',
+  component: CaixaPage,
+});
 const equipe = createRoute({
   getParentRoute: () => protegida,
   path: '/equipe',
@@ -91,7 +97,7 @@ export const router = createRouter({
   routeTree: raiz.addChildren([
     login,
     redefinirSenha,
-    protegida.addChildren([inicio, leads, clientes, obras, equipe, portfolio, depoimentos]),
+    protegida.addChildren([inicio, leads, clientes, obras, caixa, equipe, portfolio, depoimentos]),
   ]),
   history: createHashHistory(),
   defaultPendingComponent: Carregando,

@@ -153,7 +153,7 @@ test('deve caber todos os itens do menu na tela quando é celular', async ({ pag
   }
 });
 
-test('deve abrir Equipe, Portfólio e Depoimentos pelo item Mais quando é celular', async ({
+test('deve abrir Caixa, Equipe, Portfólio e Depoimentos pelo item Mais quando é celular', async ({
   page,
 }, info) => {
   const largura = info.project.use.viewport?.width ?? 0;
@@ -164,7 +164,12 @@ test('deve abrir Equipe, Portfólio e Depoimentos pelo item Mais quando é celul
 
   await page.getByRole('button', { name: 'Mais' }).click();
   const extras = page.getByRole('navigation', { name: 'Mais opções' });
-  await expect(extras.getByRole('link')).toHaveText(['Equipe', 'Portfólio', 'Depoimentos']);
+  await expect(extras.getByRole('link')).toHaveText([
+    'Caixa',
+    'Equipe',
+    'Portfólio',
+    'Depoimentos',
+  ]);
 
   await extras.getByRole('link', { name: 'Equipe' }).click();
   await expect(page).toHaveURL(/#\/equipe$/);
