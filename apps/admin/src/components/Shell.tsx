@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { useState, type ReactNode } from 'react';
 import { useSessao } from '../features/auth/SessaoProvider';
 import { AvisoNovaVersao } from './AvisoNovaVersao';
+import { DicaInstalarIos } from './DicaInstalarIos';
 import { Dialogo } from './Dialogo';
 
 // Cada entrega do docs/PLANO.md acrescenta o seu item aqui (leads, clientes, obras…).
@@ -43,6 +44,7 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[16rem_1fr]">
       <AvisoNovaVersao />
+      <DicaInstalarIos />
       {/* Computador: menu lateral fixo */}
       <aside className="bg-ebano-950 text-creme hidden flex-col gap-6 p-4 md:sticky md:top-0 md:flex md:h-dvh">
         <Marca />

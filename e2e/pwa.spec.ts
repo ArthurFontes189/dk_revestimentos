@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { entrarComoAdmin } from './apoio';
 
 test.use({ serviceWorkers: 'allow' });
 
@@ -73,4 +74,30 @@ test('deve manter o painel fora do cache do site público', async ({ page }) => 
     return (await cache.keys()).map((c) => new URL(c.url).pathname);
   });
   expect(chaves.some((c) => c.startsWith('/admin/'))).toBe(false);
+});
+
+test.describe('dica de instalação no iPhone', () => {
+  const UA_IPHONE =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
+
+  test('deve mostrar a dica uma única vez quando o admin abre o painel no iPhone', async ({
+    browser,
+  }) => {
+    const contexto = await browser.newContext({ userAgent: UA_IPHONE, serviceWorkers: 'block' });
+    const page = await contexto.newPage();
+    await entrarComoAdmin(page);
+    await page.goto('/admin/#/');
+
+    await expect(page.getByText('Adicionar à Tela de Início')).toBeVisible();
+    await page.getByRole('button', { name: 'Entendi' }).click();
+    await page.reload();
+    await expect(page.getByText('Adicionar à Tela de Início')).toBeHidden();
+    await contexto.close();
+  });
+
+  test('deve esconder a dica quando o navegador não é do iPhone', async ({ page }) => {
+    await entrarComoAdmin(page);
+    await page.goto('/admin/#/');
+    await expect(page.getByText('Adicionar à Tela de Início')).toBeHidden();
+  });
 });

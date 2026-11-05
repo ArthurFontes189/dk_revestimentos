@@ -271,7 +271,7 @@ Spec: #14, requisitos não funcionais.
 - Prefere **migrar a DK para um projeto Supabase próprio** (recomendado) ou assinar o Pro no projeto compartilhado?
 - Já existe **domínio** escolhido e **conta de anúncios** da Meta, ou deixo a Conversions API pronta e desligada?
 
-- [x] PWA do painel e do site: `manifest`, ícones 192/512/maskable e `apple-touch-icon` (gerados por `scripts/gerar-icones.mjs`), service workers próprios (escritos à mão, sem Workbox nem `vite-plugin-pwa`, para não somar dependência), cache só do shell e aviso "Nova versão disponível" no painel; 20 execuções e2e novas (370 passando). Fica de fora a dica de instalação no iOS
+- [x] PWA do painel e do site: `manifest`, ícones 192/512/maskable e `apple-touch-icon` (gerados por `scripts/gerar-icones.mjs`), service workers próprios (escritos à mão, sem Workbox nem `vite-plugin-pwa`, para não somar dependência), cache só do shell e aviso "Nova versão disponível" no painel; 20 execuções e2e novas (370 passando). A dica de instalação no iOS aparece uma única vez no Safari do iPhone/iPad
 - [ ] Qualidade. Feito: modais conferidos (o `<dialog>` nativo já prende o foco, fecha com Esc e devolve o foco; teste e2e `acessibilidade.spec.ts` nas 4 larguras) e bundle medido (JS de entrada 200 KB comprimido, meta 250 KB; rotas de portfólio e depoimentos em arquivos separados). Falta: tema escuro e URL de recuperação de senha no Supabase (esta é config sua)
 - [ ] Meta Conversions API (Edge Function `meta-capi`, desligada sem segredo, com `event_id` e hash SHA-256)
 - [ ] Migração do deploy para Cloudflare Pages com cabeçalhos de segurança; domínio próprio
